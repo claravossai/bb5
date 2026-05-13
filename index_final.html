@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Bad Boys 5 — Painel do Clã</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka:wght@500;600;700&family=Bowlby+One+SC&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+/* ╔════════════════════════════════════════════════════════════
+   BB5 — Village Panel
+   Warm wood · stone · gold · parchment · medieval village
+   ════════════════════════════════════════════════════════════ */
+:root{
+  /* DEEP WOOD / STONE SURFACES */
+  --bg-night:   #1a0d05;        /* deepest cocoa night */
+  --bg-wood:    #2b1810;        /* dark walnut */
+  --bg-plank:   #3a2418;        /* aged plank */
+  --bg-plank2:  #4a2f1c;        /* lighter plank */
+  --bg-stone:   #5a4030;        /* stained stone */
+  /* GOLD ACCENTS */
+  --gold:       #f5b938;
+  --gold-l:     #ffd96b;
+  --gold-d:     #b07614;
+  --gold-deep:  #6b4514;
+  /* ORANGE ACCENT (CoC attack/elixir energy) */
+  --orange:     #ff8a3d;
+  --orange-d:   #b8501c;
+  /* PARCHMENT/CREAM TEXT */
+  --cream:      #f6e6b8;
+  --tan:        #d4b482;
+  --tan-dim:    #a08458;
+  --dim:        #7a5e3a;
+  /* STATE COLORS — natural, not neon */
+  --green:      #6ab53a;        --gtxt:#a8d870;
+  --red:        #d94535;        --rtxt:#f08272;
+  --yel:        #e8a420;        --ytxt:#f4c850;
+  --blue:       #4a7fc8;        --btxt:#82b0e8;
+  /* BORDERS (warm) */
+  --bdr:        rgba(245,185,56,.22);
+  --bdr-strong: rgba(245,185,56,.5);
+  --bdr-dark:   rgba(0,0,0,.4);
+  /* SHADOWS */
+  --sh-out:     0 4px 0 #1a0d05, 0 6px 16px rgba(0,0,0,.55);
+  --sh-press:   0 2px 0 #1a0d05, 0 3px 8px rgba(0,0,0,.5);
+  /* SHAPE */
+  --r-sm:6px; --r:10px; --r-lg:14px; --r-xl:18px;
+  --tab-h:64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg-night);color:var(--cream);font-family:'Fredoka',sans-serif;font-size:14px;font-weight:500;line-height:1.5;overscroll-behavior:none;}
+body{
+  background:
+    radial-gradient(ellipse 800px 600px at 50% -10%, rgba(245,185,56,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 400px at 50% 110%, rgba(255,138,61,.04) 0%, transparent 60%),
+    var(--bg-night);
+  background-attachment:fixed;
+}
+/* subtle wood grain on everything */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background:repeating-linear-gradient(90deg,transparent 0 60px,rgba(0,0,0,.04) 60px 61px,transparent 61px 120px),
+             repeating-linear-gradient(0deg,transparent 0 90px,rgba(0,0,0,.025) 90px 91px);
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit;}
+button{cursor:pointer;}
+.display{font-family:'Lilita One',sans-serif;letter-spacing:.02em;}
+.label{font-family:'Lilita One',sans-serif;letter-spacing:.04em;}
+
+/* ╔════════════════════════════════════════════════════════════
+   LOGIN — Castle Gate
+   ════════════════════════════════════════════════════════════ */
+#login-screen{
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.5rem;
+  background:
+    radial-gradient(ellipse 700px 500px at 50% 35%, rgba(245,185,56,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 1000px 700px at 50% 100%, rgba(255,138,61,.08) 0%, transparent 60%),
+    linear-gradient(180deg, #1a0d05 0%, #0d0703 100%);
+  overflow:hidden;
+}
+/* warm torch glow vignette */
+#login-screen::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 38%, transparent 320px, rgba(0,0,0,.6) 600px);
+}
+.login-box{position:relative;z-index:2;width:100%;max-width:380px;text-align:center;}
+
+/* Clan banner (heraldic shield) */
+.banner{
+  position:relative;width:140px;height:160px;margin:0 auto 1.25rem;
+}
+.banner svg{width:100%;height:100%;filter:drop-shadow(0 8px 20px rgba(0,0,0,.7)) drop-shadow(0 0 28px rgba(245,185,56,.4));}
+
+.login-title{
+  font-family:'Lilita One',sans-serif;font-size:38px;
+  color:var(--gold-l);letter-spacing:.04em;
+  text-shadow:
+    0 2px 0 var(--gold-deep),
+    0 3px 0 #3a2510,
+    0 4px 0 #1a0d05,
+    0 6px 12px rgba(0,0,0,.7),
+    0 0 24px rgba(245,185,56,.4);
+  margin-bottom:4px;line-height:1;
+}
+.login-title .num{color:var(--orange);}
+.login-sub{
+  font-family:'Fredoka',sans-serif;font-weight:600;font-size:13px;
+  color:var(--tan);letter-spacing:.18em;text-transform:uppercase;
+  margin-bottom:2rem;
+}
+.login-divider{
+  display:flex;align-items:center;gap:14px;margin:0 auto 1.5rem;max-width:300px;
+  font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;
+}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:2px;background:linear-gradient(90deg, transparent, var(--gold-d), transparent);}
+
+.login-field{position:relative;margin-bottom:14px;}
+.login-field input{
+  width:100%;
+  background:linear-gradient(180deg, #1a0d05 0%, #2b1810 100%);
+  border:2px solid var(--gold-deep);
+  border-radius:var(--r);
+  padding:16px 16px 16px 50px;
+  font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;
+  color:var(--cream);outline:none;
+  letter-spacing:.1em;
+  box-shadow:inset 0 3px 6px rgba(0,0,0,.6), 0 2px 0 rgba(0,0,0,.4);
+  transition:all .2s;
+}
+.login-field input:focus{border-color:var(--gold);box-shadow:inset 0 3px 6px rgba(0,0,0,.6), 0 0 0 3px rgba(245,185,56,.2), 0 0 24px rgba(245,185,56,.3);}
+.login-field input::placeholder{color:var(--dim);font-weight:500;}
+.login-field .fi{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--gold);}
+
+/* CHUNKY BUTTON — the core CoC button */
+.btn-chunky{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:14px 22px;
+  background:linear-gradient(180deg, #ffd96b 0%, #f5b938 40%, #d99020 100%);
+  border:2px solid #6b4514;
+  border-radius:var(--r-lg);
+  font-family:'Lilita One',sans-serif;font-size:15px;letter-spacing:.08em;text-transform:uppercase;
+  color:#3a1f08;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+  cursor:pointer;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.45),
+    inset 0 -3px 0 rgba(0,0,0,.18),
+    0 4px 0 #6b4514,
+    0 6px 12px rgba(0,0,0,.45);
+  transition:transform .08s, box-shadow .08s;
+  white-space:nowrap;
+}
+.btn-chunky:hover{filter:brightness(1.06);}
+.btn-chunky:active{
+  transform:translateY(3px);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.3), inset 0 -2px 0 rgba(0,0,0,.18), 0 1px 0 #6b4514, 0 2px 6px rgba(0,0,0,.4);
+}
+.btn-chunky.orange{
+  background:linear-gradient(180deg, #ffaa5a 0%, #ff8a3d 50%, #c85820 100%);
+  border-color:#6b3010;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.4), inset 0 -3px 0 rgba(0,0,0,.18), 0 4px 0 #6b3010, 0 6px 12px rgba(0,0,0,.5);
+}
+.btn-chunky.orange:active{box-shadow:inset 0 2px 0 rgba(255,255,255,.3), inset 0 -2px 0 rgba(0,0,0,.2), 0 1px 0 #6b3010, 0 2px 6px rgba(0,0,0,.4);}
+.btn-chunky.green{
+  background:linear-gradient(180deg, #95d562 0%, #6ab53a 50%, #427a18 100%);
+  border-color:#2b5008;color:#fff;
+  text-shadow:0 1px 0 rgba(0,0,0,.3);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.18), 0 4px 0 #2b5008, 0 6px 12px rgba(0,0,0,.5);
+}
+.btn-chunky.green:active{box-shadow:inset 0 2px 0 rgba(255,255,255,.25), inset 0 -2px 0 rgba(0,0,0,.2), 0 1px 0 #2b5008, 0 2px 6px rgba(0,0,0,.4);}
+.btn-chunky.red{
+  background:linear-gradient(180deg, #f06858 0%, #d94535 50%, #8a2010 100%);
+  border-color:#5a1008;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.3);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.3), inset 0 -3px 0 rgba(0,0,0,.18), 0 4px 0 #5a1008, 0 6px 12px rgba(0,0,0,.5);
+}
+.btn-chunky.red:active{box-shadow:inset 0 2px 0 rgba(255,255,255,.25), inset 0 -2px 0 rgba(0,0,0,.2), 0 1px 0 #5a1008, 0 2px 6px rgba(0,0,0,.4);}
+.btn-chunky.stone{
+  background:linear-gradient(180deg, #6a4e34 0%, #4a3020 50%, #2a1808 100%);
+  border-color:#1a0d05;color:var(--cream);text-shadow:0 1px 0 rgba(0,0,0,.5);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.3), 0 4px 0 #1a0d05, 0 6px 12px rgba(0,0,0,.45);
+}
+.btn-chunky.stone:active{box-shadow:inset 0 2px 0 rgba(255,255,255,.08), inset 0 -2px 0 rgba(0,0,0,.3), 0 1px 0 #1a0d05, 0 2px 6px rgba(0,0,0,.4);}
+.btn-chunky.lg{padding:17px 28px;font-size:17px;}
+.btn-chunky.full{display:flex;width:100%;}
+.btn-chunky.sm{padding:8px 14px;font-size:12px;}
+.btn-chunky i{font-size:1.15em;}
+
+.login-btn{margin-top:6px;}
+.login-err{font-family:'Fredoka',sans-serif;font-weight:600;font-size:12px;color:var(--rtxt);margin-top:12px;min-height:18px;letter-spacing:.04em;}
+.login-version{font-family:'Lilita One',sans-serif;font-size:10px;color:var(--dim);margin-top:2rem;letter-spacing:.25em;text-transform:uppercase;}
+
+/* ╔════════════════════════════════════════════════════════════
+   APP SHELL
+   ════════════════════════════════════════════════════════════ */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:column;position:relative;z-index:1;}
+#app.ready{display:flex;}
+
+/* TOP BAR — wood plank header */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:66px;
+  background:
+    linear-gradient(180deg, #4a2f1c 0%, #3a2418 100%);
+  border-bottom:3px solid #6b4514;
+  flex-shrink:0;gap:10px;position:relative;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
+}
+.topbar::before{
+  content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;
+  background:linear-gradient(180deg, #f5b938 0%, #b07614 50%, #6b4514 100%);
+}
+.topbar::after{
+  /* wood grain */
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background:repeating-linear-gradient(90deg,transparent 0 40px,rgba(0,0,0,.08) 40px 41px);
+}
+.topbar-brand{display:flex;align-items:center;gap:11px;min-width:0;position:relative;z-index:1;}
+.topbar-icon{position:relative;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.topbar-icon svg{width:100%;height:100%;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));}
+.topbar-name{font-family:'Lilita One',sans-serif;font-size:18px;color:var(--gold-l);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 0 var(--gold-deep), 0 3px 0 #1a0d05;letter-spacing:.03em;line-height:1.05;}
+.topbar-name .com{display:block;font-size:10px;color:var(--tan);text-shadow:0 1px 0 rgba(0,0,0,.6);letter-spacing:.16em;font-family:'Lilita One',sans-serif;margin-top:1px;}
+.topbar-sub{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:var(--cream);white-space:nowrap;letter-spacing:.04em;opacity:.85;}
+.topbar-right{display:flex;align-items:center;gap:7px;flex-shrink:0;position:relative;z-index:1;}
+
+/* model pill (small chunky) */
+.model-pill{
+  display:flex;align-items:center;gap:5px;padding:7px 12px;
+  border-radius:var(--r-sm);font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;border:2px solid;
+  transition:all .15s;
+  text-shadow:0 1px 0 rgba(0,0,0,.4);
+}
+.m1{
+  background:linear-gradient(180deg, #95d562 0%, #6ab53a 100%);
+  border-color:#2b5008;color:#fff;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.3), 0 3px 0 #2b5008, 0 4px 6px rgba(0,0,0,.4);
+}
+.m2{
+  background:linear-gradient(180deg, #f06858 0%, #d94535 100%);
+  border-color:#5a1008;color:#fff;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.25), 0 3px 0 #5a1008, 0 4px 6px rgba(0,0,0,.4);
+}
+.model-pill:active{transform:translateY(2px);}
+.m1:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 1px 0 #2b5008;}
+.m2:active{box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 1px 0 #5a1008;}
+
+.logout-btn{
+  background:linear-gradient(180deg, #5a3a20 0%, #3a2418 100%);
+  border:2px solid #6b4514;border-radius:var(--r-sm);padding:7px 9px;color:var(--tan);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 3px 0 #1a0d05;
+  transition:all .15s;
+}
+.logout-btn:hover{color:var(--rtxt);border-color:var(--red);}
+.logout-btn:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 1px 0 #1a0d05;}
+.logout-btn i{font-size:17px;display:block;}
+
+.sync-indicator{font-family:'Fredoka',sans-serif;font-size:10px;color:var(--tan);display:flex;align-items:center;gap:4px;font-weight:600;letter-spacing:.05em;}
+.sync-indicator.ok{color:var(--gtxt);}
+.sync-indicator.err{color:var(--rtxt);}
+@media(max-width:520px){.sync-indicator span{display:none;}}
+
+/* SCROLL */
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;}
+.scroll-inner{padding:14px;padding-bottom:calc(var(--tab-h) + 1.25rem);max-width:760px;margin:0 auto;}
+
+/* BOTTOM TAB BAR — wooden plank with raised active stone */
+.tab-nav{
+  display:flex;
+  background:linear-gradient(180deg, #3a2418 0%, #2a1810 100%);
+  border-top:3px solid #6b4514;
+  height:var(--tab-h);flex-shrink:0;position:relative;
+  box-shadow:0 -4px 14px rgba(0,0,0,.6);
+}
+.tab-nav::before{
+  content:'';position:absolute;left:0;right:0;top:-3px;height:3px;
+  background:linear-gradient(180deg, #6b4514 0%, #b07614 50%, #f5b938 100%);
+}
+.tab-nav::after{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background:repeating-linear-gradient(90deg,transparent 0 50px,rgba(0,0,0,.08) 50px 51px);
+}
+.tn-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:none;background:none;color:var(--tan-dim);
+  font-family:'Lilita One',sans-serif;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 2px;transition:all .15s;position:relative;text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+.tn-btn i{font-size:22px;transition:all .15s;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6));}
+.tn-btn.active{color:var(--gold-l);text-shadow:0 1px 0 var(--gold-deep), 0 2px 0 #1a0d05;}
+.tn-btn.active i{color:var(--gold);filter:drop-shadow(0 0 8px rgba(245,185,56,.6)) drop-shadow(0 1px 0 rgba(0,0,0,.6));}
+.tn-btn.active::before{
+  content:'';position:absolute;top:-3px;left:18%;right:18%;height:3px;
+  background:var(--gold);box-shadow:0 0 12px var(--gold), 0 0 24px rgba(245,185,56,.6);
+  border-radius:0 0 4px 4px;
+}
+.tn-btn.active::after{
+  content:'';position:absolute;inset:4px;
+  background:radial-gradient(ellipse at 50% 100%, rgba(245,185,56,.18) 0%, transparent 65%);
+  pointer-events:none;border-radius:6px;
+}
+
+/* DESKTOP TABS — wooden plank */
+.desktop-tabs{display:none;background:linear-gradient(180deg, #3a2418 0%, #2a1810 100%);border-bottom:3px solid #6b4514;flex-shrink:0;position:relative;}
+.desktop-tabs::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;background:linear-gradient(180deg,#6b4514 0%,#b07614 50%,#f5b938 100%);}
+.desktop-tabs .tabs-inner{display:flex;max-width:760px;margin:0 auto;padding:0 14px;}
+.dt-btn{
+  padding:14px 18px;font-family:'Lilita One',sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;border:none;background:none;color:var(--tan-dim);
+  display:flex;align-items:center;gap:7px;white-space:nowrap;transition:all .15s;position:relative;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+.dt-btn:hover{color:var(--cream);}
+.dt-btn.active{color:var(--gold-l);text-shadow:0 1px 0 var(--gold-deep), 0 2px 0 #1a0d05;}
+.dt-btn.active i{color:var(--gold);filter:drop-shadow(0 0 8px rgba(245,185,56,.5));}
+.dt-btn.active::after{content:'';position:absolute;left:14%;right:14%;bottom:-3px;height:3px;background:var(--gold);box-shadow:0 0 12px var(--gold);}
+.dt-btn i{font-size:15px;}
+
+/* SECTIONS */
+.section{display:none;}.section.active{display:block;}
+
+/* ╔════════════════════════════════════════════════════════════
+   PANELS — CoC-style dark wood card with gold trim
+   ════════════════════════════════════════════════════════════ */
+.card{
+  position:relative;
+  background:
+    linear-gradient(180deg, var(--bg-plank) 0%, var(--bg-wood) 100%);
+  border:3px solid #6b4514;
+  border-radius:var(--r-lg);
+  padding:16px 14px 14px;
+  margin-bottom:14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 0 0 1px rgba(245,185,56,.1),
+    0 6px 0 rgba(0,0,0,.4),
+    0 8px 16px rgba(0,0,0,.45);
+}
+/* faint stone texture */
+.card::before{
+  content:'';position:absolute;inset:3px;border-radius:calc(var(--r-lg) - 3px);pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 20%, rgba(245,185,56,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,0,0,.15) 0%, transparent 60%);
+}
+.card>*{position:relative;}
+
+.card-hdr{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  margin:-16px -14px 14px;padding:11px 14px 10px;
+  background:
+    linear-gradient(180deg, rgba(245,185,56,.13) 0%, rgba(245,185,56,.04) 100%);
+  border-bottom:2px solid #6b4514;
+  border-radius:calc(var(--r-lg) - 3px) calc(var(--r-lg) - 3px) 0 0;
+  position:relative;
+}
+.card-hdr::after{
+  content:'';position:absolute;left:0;right:0;bottom:-2px;height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+}
+.card-title{
+  font-family:'Lilita One',sans-serif;font-size:15px;color:var(--gold-l);
+  letter-spacing:.05em;
+  text-shadow:0 2px 0 var(--gold-deep), 0 3px 4px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title i{font-size:18px;color:var(--gold);filter:drop-shadow(0 1px 0 var(--gold-deep));}
+
+/* ╔════════════════════════════════════════════════════════════
+   METRIC TILES — CoC resource counters
+   gold-rim chip with icon left, big number right
+   ════════════════════════════════════════════════════════════ */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.metric{
+  position:relative;
+  background:linear-gradient(180deg, #2a1810 0%, #1a0d05 100%);
+  border:2px solid #6b4514;
+  border-radius:var(--r);
+  padding:9px 10px 9px 8px;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 3px 0 rgba(0,0,0,.5), 0 4px 8px rgba(0,0,0,.4);
+}
+.metric .m-icon{
+  flex-shrink:0;width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(180deg, #6b4514 0%, #3a2510 100%);
+  border:1.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(0,0,0,.4);
+}
+.metric .m-icon i{font-size:18px;color:var(--gold-l);filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
+.metric-body{display:flex;flex-direction:column;min-width:0;flex:1;}
+.metric-val{font-family:'Lilita One',sans-serif;font-size:22px;color:var(--cream);line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.6);letter-spacing:.02em;}
+.metric-lbl{font-family:'Fredoka',sans-serif;font-weight:600;font-size:10px;color:var(--tan-dim);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+
+.metric.green .m-icon{background:linear-gradient(180deg,#6ab53a 0%,#2b5008 100%);border-color:#a8d870;}
+.metric.green .metric-val{color:var(--gtxt);}
+.metric.red .m-icon{background:linear-gradient(180deg,#d94535 0%,#5a1008 100%);border-color:#f08272;}
+.metric.red .metric-val{color:var(--rtxt);}
+.metric.yel .m-icon{background:linear-gradient(180deg,#e8a420 0%,#7a5008 100%);border-color:#f4c850;}
+.metric.yel .metric-val{color:var(--ytxt);}
+.metric.blue .m-icon{background:linear-gradient(180deg,#4a7fc8 0%,#1a3a78 100%);border-color:#82b0e8;}
+.metric.blue .metric-val{color:var(--btxt);}
+.metric.orange .m-icon{background:linear-gradient(180deg,#ff8a3d 0%,#8a3010 100%);border-color:#ffaa5a;}
+.metric.orange .metric-val{color:#ffb070;}
+
+/* ╔════════════════════════════════════════════════════════════
+   TOWN HALL BADGES — original geometric keep silhouettes
+   Each tier uses rect+triangle primitives only.
+   ════════════════════════════════════════════════════════════ */
+.th-badge{
+  position:relative;width:54px;height:54px;flex-shrink:0;
+  border-radius:11px;
+  background:linear-gradient(180deg, var(--tile-bg1, #6ab9d0) 0%, var(--tile-bg2, #2a6878) 100%);
+  border:2.5px solid #1a0d05;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.2),
+    inset 0 -3px 0 rgba(0,0,0,.25),
+    0 3px 0 rgba(0,0,0,.4),
+    0 4px 8px rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.th-badge.sm{width:38px;height:38px;border-radius:8px;border-width:2px;}
+.th-badge svg.castle{width:90%;height:90%;display:block;filter:drop-shadow(0 1px 0 rgba(0,0,0,.6));}
+.th-badge .th-num{
+  position:absolute;right:-4px;bottom:-4px;
+  min-width:22px;height:18px;padding:0 5px;
+  background:linear-gradient(180deg, #ffd96b 0%, #d99020 100%);
+  border:1.5px solid #6b4514;
+  border-radius:5px;
+  font-family:'Lilita One',sans-serif;font-size:11px;color:#3a1f08;
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 0 rgba(0,0,0,.6), 0 2px 4px rgba(0,0,0,.5);
+  z-index:2;
+}
+.th-badge.sm .th-num{min-width:18px;height:14px;font-size:9px;padding:0 3px;right:-3px;bottom:-3px;}
+
+/* Tier tile background colors (sky-like over the keep) */
+.th-badge.t1{--tile-bg1:#88d670;--tile-bg2:#3a7028;}    /* grassland */
+.th-badge.t2{--tile-bg1:#a8c4d8;--tile-bg2:#4a6878;}    /* overcast */
+.th-badge.t3{--tile-bg1:#8a8478;--tile-bg2:#3a3428;}    /* stone moor */
+.th-badge.t4{--tile-bg1:#ffb858;--tile-bg2:#a85020;}    /* golden hour */
+.th-badge.t5{--tile-bg1:#d44535;--tile-bg2:#5a1008;}    /* lava field */
+.th-badge.t6{--tile-bg1:#7058b0;--tile-bg2:#1a0830;}    /* obsidian */
+
+/* role ring */
+.th-badge.r-lider{border-color:var(--gold);box-shadow:inset 0 2px 0 rgba(255,255,255,.2), inset 0 -3px 0 rgba(0,0,0,.25), 0 0 0 1px var(--gold-d), 0 3px 0 rgba(0,0,0,.4), 0 0 14px rgba(245,185,56,.45);}
+.th-badge.r-co{border-color:#82b0e8;box-shadow:inset 0 2px 0 rgba(255,255,255,.2), inset 0 -3px 0 rgba(0,0,0,.25), 0 0 0 1px #4a7fc8, 0 3px 0 rgba(0,0,0,.4), 0 0 14px rgba(130,176,232,.45);}
+
+/* tiny role pip (crown / star) on top-left */
+.th-badge .pip{
+  position:absolute;left:-4px;top:-4px;
+  width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(180deg, #ffd96b 0%, #c08818 100%);
+  border:1.5px solid #6b4514;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 2px rgba(0,0,0,.5);
+  z-index:2;
+}
+.th-badge .pip i{font-size:10px;color:#3a1f08;}
+.th-badge.r-co .pip{background:linear-gradient(180deg,#a8c8f0 0%,#4a7fc8 100%);}
+.th-badge.r-co .pip i{color:#1a3a78;}
+.th-badge.r-vet .pip{background:linear-gradient(180deg,#a8d870 0%,#4a7820 100%);}
+.th-badge.r-vet .pip i{color:#1a3a08;}
+.th-badge.sm .pip{width:14px;height:14px;left:-3px;top:-3px;}
+.th-badge.sm .pip i{font-size:7px;}
+
+/* ╔════════════════════════════════════════════════════════════
+   ROSTER ROWS
+   ════════════════════════════════════════════════════════════ */
+.player-row{
+  display:flex;align-items:center;gap:11px;padding:11px 4px;
+  border-bottom:1px dashed rgba(245,185,56,.15);
+}
+.player-row:last-child{border-bottom:none;}
+.player-info{flex:1;min-width:0;}
+.player-name{font-family:'Lilita One',sans-serif;font-size:15px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.1;text-shadow:0 1px 0 rgba(0,0,0,.6);letter-spacing:.02em;}
+.player-meta{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:var(--tan-dim);margin-top:2px;letter-spacing:.03em;}
+.player-meta .adv{color:var(--rtxt);font-weight:700;}
+
+/* BADGES — coin/banner style chips */
+.badges{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+.badge{
+  font-family:'Lilita One',sans-serif;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 8px;border-radius:5px;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;
+  border:1.5px solid;
+  text-shadow:0 1px 0 rgba(0,0,0,.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 1px 0 rgba(0,0,0,.4);
+}
+.badge i{font-size:11px;}
+.bg{background:linear-gradient(180deg,#6ab53a,#2b5008);color:#fff;border-color:#1f3a08;}
+.br{background:linear-gradient(180deg,#d94535,#5a1008);color:#fff;border-color:#3a0808;}
+.bw{background:linear-gradient(180deg,#e8a420,#7a5008);color:#fff;border-color:#3a2008;}
+.bb{background:linear-gradient(180deg,#4a7fc8,#1a3a78);color:#fff;border-color:#0a1a3a;}
+.bgold{background:linear-gradient(180deg,#ffd96b,#c08818);color:#3a1f08;border-color:#6b4514;text-shadow:0 1px 0 rgba(255,255,255,.35);}
+.bmem{background:linear-gradient(180deg,#7a5e3a,#3a2510);color:var(--cream);border-color:#1a0d05;}
+
+/* ROW ACTIONS — chunky icon buttons */
+.row-actions{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.warn-stack{display:flex;flex-direction:column;gap:3px;}
+.wmini{
+  background:linear-gradient(180deg, #5a3e24 0%, #3a2510 100%);
+  border:1.5px solid #6b4514;
+  cursor:pointer;padding:0;width:26px;height:17px;
+  display:flex;align-items:center;justify-content:center;color:var(--tan);
+  border-radius:5px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 2px 0 rgba(0,0,0,.4);
+  transition:all .12s;
+}
+.wmini:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 1px 0 rgba(0,0,0,.4);}
+.wmini.up:hover{color:var(--ytxt);}
+.wmini.down:hover{color:var(--gtxt);}
+.wmini i{font-size:12px;}
+.icon-btn{
+  background:linear-gradient(180deg, #5a3e24 0%, #3a2510 100%);
+  border:1.5px solid #6b4514;
+  cursor:pointer;padding:0;width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;color:var(--tan);
+  border-radius:7px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 2px 0 rgba(0,0,0,.4);
+  transition:all .12s;
+}
+.icon-btn:hover{color:var(--cream);border-color:var(--gold);}
+.icon-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 1px 0 rgba(0,0,0,.4);}
+.icon-btn.danger:hover{color:var(--rtxt);border-color:var(--red);}
+.icon-btn i{font-size:15px;}
+
+/* FILTER PILLS — chunky */
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:3px;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.fc{
+  padding:7px 13px;border-radius:7px;
+  font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;border:2px solid #6b4514;
+  background:linear-gradient(180deg, #5a3a20 0%, #3a2510 100%);
+  color:var(--tan);
+  white-space:nowrap;flex-shrink:0;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 2px 0 rgba(0,0,0,.4);
+  transition:all .12s;
+}
+.fc:hover{color:var(--cream);}
+.fc.active{
+  background:linear-gradient(180deg, #ffd96b 0%, #d99020 100%);
+  border-color:#6b4514;color:#3a1f08;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(0,0,0,.15), 0 2px 0 #6b4514;
+}
+
+/* SMALL ADD BUTTON — orange chunky pill */
+.add-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:7px 13px;
+  border-radius:8px;
+  background:linear-gradient(180deg, #ffaa5a 0%, #ff8a3d 50%, #c85820 100%);
+  border:2px solid #6b3010;color:#fff;cursor:pointer;
+  font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(0,0,0,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.18), 0 3px 0 #6b3010, 0 4px 8px rgba(0,0,0,.4);
+  transition:all .1s;
+}
+.add-btn:hover{filter:brightness(1.05);}
+.add-btn:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.2), 0 1px 0 #6b3010;}
+.add-btn i{font-size:13px;}
+
+/* ╔════════════════════════════════════════════════════════════
+   WAR CARDS — battle summary screen
+   ════════════════════════════════════════════════════════════ */
+.war-card{
+  position:relative;
+  background:linear-gradient(180deg, var(--bg-plank2) 0%, var(--bg-wood) 100%);
+  border:3px solid #6b4514;
+  border-radius:var(--r-lg);
+  margin-bottom:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 5px 0 rgba(0,0,0,.4), 0 6px 12px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.war-hdr{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:11px 14px;
+  background:linear-gradient(180deg, rgba(245,185,56,.13) 0%, rgba(245,185,56,.04) 100%);
+  border-bottom:2px solid #6b4514;
+}
+.war-meta-name{font-family:'Lilita One',sans-serif;font-size:14px;color:var(--cream);letter-spacing:.04em;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.war-meta-name .vs{color:var(--tan-dim);font-size:12px;}
+.war-sub{font-family:'Fredoka',sans-serif;font-weight:600;font-size:11px;color:var(--tan-dim);margin-top:2px;letter-spacing:.04em;}
+.war-actions{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+
+/* RESULT BANNER — big chunky win/loss seal */
+.rbadge{
+  font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 12px;border-radius:7px;border:2px solid;
+  text-shadow:0 1px 0 rgba(0,0,0,.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 2px 0 rgba(0,0,0,.4);
+}
+.win-b{background:linear-gradient(180deg,#6ab53a,#2b5008);color:#fff;border-color:#1f3a08;}
+.loss-b{background:linear-gradient(180deg,#d94535,#5a1008);color:#fff;border-color:#3a0808;}
+.draw-b{background:linear-gradient(180deg,#e8a420,#7a5008);color:#fff;border-color:#3a2008;}
+
+/* BIG SCORE */
+.war-score{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:18px 14px 12px;}
+.team-c{text-align:center;min-width:0;}
+.team-n{font-family:'Lilita One',sans-serif;font-size:11px;letter-spacing:.1em;color:var(--tan-dim);text-transform:uppercase;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.team-c.ours .team-n{color:var(--gold-l);}
+.team-s{
+  font-family:'Lilita One',sans-serif;font-size:46px;line-height:1;color:var(--cream);
+  text-shadow:0 2px 0 var(--gold-deep), 0 3px 0 #1a0d05, 0 5px 10px rgba(0,0,0,.6);
+}
+.team-c.ours .team-s{color:var(--gold-l);}
+.team-c.them .team-s{color:var(--tan);}
+.war-card.win .team-c.ours .team-s{color:#a8e060;}
+.team-star{font-family:'Lilita One',sans-serif;font-size:.45em;vertical-align:.4em;color:var(--gold);margin-left:2px;filter:drop-shadow(0 0 8px rgba(245,185,56,.5));}
+.war-card.win .team-c.ours .team-star{color:#a8e060;}
+
+/* VS Glyph - crossed swords coin */
+.vs-glyph{
+  width:48px;height:48px;border-radius:50%;
+  background:radial-gradient(circle, #4a2f1c 0%, #1a0d05 100%);
+  border:2.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Lilita One',sans-serif;font-size:12px;color:var(--gold-l);letter-spacing:.06em;
+  text-shadow:0 1px 0 rgba(0,0,0,.6);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.15), inset 0 -2px 0 rgba(0,0,0,.3), 0 2px 0 rgba(0,0,0,.4), 0 0 12px rgba(245,185,56,.3);
+}
+
+/* progress bar - stone trough with gem fill */
+.pbar{
+  height:10px;margin:0 14px 12px;
+  background:linear-gradient(180deg, #1a0d05 0%, #2a1810 100%);
+  border:2px solid #6b4514;border-radius:6px;overflow:hidden;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.7);
+}
+.pfill{height:100%;border-radius:3px;position:relative;transition:width .4s;}
+.pfill.win{background:linear-gradient(180deg, #a8e060 0%, #6ab53a 50%, #427a18 100%);}
+.pfill.loss{background:linear-gradient(180deg, #ff8a7a 0%, #d94535 50%, #8a2010 100%);}
+.pfill.draw{background:linear-gradient(180deg, #ffd96b 0%, #e8a420 50%, #7a5008 100%);}
+.pfill::after{content:'';position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.4),transparent);border-radius:3px 3px 0 0;}
+
+/* attack list */
+.atk-list{padding:0 14px 12px;}
+.atk-row{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:12.5px;border-bottom:1px dashed rgba(245,185,56,.1);}
+.atk-row:last-child{border-bottom:none;}
+.atk-p{font-family:'Lilita One',sans-serif;color:var(--cream);min-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.02em;font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.atk-arrow{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--tan-dim);font-size:11px;letter-spacing:.04em;}
+.stars{display:inline-flex;gap:2px;align-items:center;}
+.stars span{color:var(--gold);font-size:16px;line-height:1;filter:drop-shadow(0 1px 0 var(--gold-deep)) drop-shadow(0 0 6px rgba(245,185,56,.5));}
+.stars .off{color:#1a0d05;filter:none;opacity:.8;}
+.war-foot{padding:0 14px 12px;display:flex;justify-content:flex-end;}
+
+/* ╔════════════════════════════════════════════════════════════
+   DONATIONS LIST
+   ════════════════════════════════════════════════════════════ */
+.don-row{display:grid;align-items:center;padding:9px 0;border-bottom:1px dashed rgba(245,185,56,.1);font-size:13px;}
+.don-row:last-child{border-bottom:none;}
+.don-rank{font-family:'Lilita One',sans-serif;font-size:13px;color:var(--tan);text-align:center;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.don-rank.medal{font-size:18px;}
+.don-name{font-family:'Lilita One',sans-serif;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.02em;font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.don-s{text-align:right;font-family:'Lilita One',sans-serif;color:var(--gtxt);font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.don-r{text-align:right;font-family:'Lilita One',sans-serif;color:var(--btxt);font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.don-ratio{text-align:right;font-family:'Lilita One',sans-serif;font-size:13px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.col-hdr{display:grid;padding:7px 0;font-family:'Lilita One',sans-serif;font-size:9.5px;color:var(--tan-dim);border-bottom:2px solid rgba(245,185,56,.18);margin-bottom:5px;text-transform:uppercase;letter-spacing:.13em;}
+
+/* SEASON TABS — chunky wood */
+.season-tabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:3px;}
+.season-tabs::-webkit-scrollbar{display:none;}
+.stab{
+  padding:6px 12px;border-radius:6px;
+  font-family:'Lilita One',sans-serif;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;border:2px solid #6b4514;
+  background:linear-gradient(180deg,#5a3a20,#3a2510);
+  color:var(--tan);
+  white-space:nowrap;flex-shrink:0;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 2px 0 rgba(0,0,0,.4);
+  transition:all .12s;
+}
+.stab.active{background:linear-gradient(180deg,#ffd96b,#d99020);color:#3a1f08;text-shadow:0 1px 0 rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 2px 0 #6b4514;}
+
+/* ╔════════════════════════════════════════════════════════════
+   CALENDAR
+   ════════════════════════════════════════════════════════════ */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:1rem;}
+.cal-dh{font-family:'Lilita One',sans-serif;font-size:10px;color:var(--gold-l);text-align:center;padding:4px 0;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.cal-day{
+  border-radius:6px;padding:4px 3px;min-height:60px;
+  border:2px solid #6b4514;
+  background:linear-gradient(180deg,#2a1810,#1a0d05);
+  cursor:pointer;transition:all .12s;position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 2px 0 rgba(0,0,0,.4);
+}
+.cal-day:hover{border-color:var(--gold);}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default;pointer-events:none;box-shadow:none;}
+.cal-day.today{border-color:var(--gold);background:linear-gradient(180deg, rgba(245,185,56,.22), rgba(245,185,56,.05));box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 0 12px rgba(245,185,56,.4), 0 2px 0 rgba(0,0,0,.4);}
+.cal-num{font-family:'Lilita One',sans-serif;font-size:11px;color:var(--tan);margin-bottom:2px;text-align:right;padding-right:2px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.cal-today .cal-num{color:var(--gold-l);}
+.cal-ev{font-size:8.5px;padding:1px 4px;border-radius:3px;margin-bottom:1px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Lilita One',sans-serif;letter-spacing:.04em;text-shadow:0 1px 0 rgba(0,0,0,.4);}
+.ev-war{background:linear-gradient(180deg,#6ab53a,#2b5008);color:#fff;}
+.ev-raid{background:linear-gradient(180deg,#4a7fc8,#1a3a78);color:#fff;}
+.ev-cwl{background:linear-gradient(180deg,#ffd96b,#c08818);color:#3a1f08;text-shadow:0 1px 0 rgba(255,255,255,.3);}
+.ev-games{background:linear-gradient(180deg,#e8a420,#7a5008);color:#fff;}
+.ev-admin{background:linear-gradient(180deg,#7a5e3a,#3a2510);color:var(--cream);}
+.ev-custom{background:linear-gradient(180deg,#b85dc8,#5d1875);color:#fff;}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.85rem;}
+.leg-i{display:flex;align-items:center;gap:5px;font-family:'Lilita One',sans-serif;font-size:10px;color:var(--tan);letter-spacing:.08em;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.5);}
+.leg-d{width:10px;height:10px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
+
+/* ╔════════════════════════════════════════════════════════════
+   RULES / FIXED — scroll-of-laws rows
+   ════════════════════════════════════════════════════════════ */
+.rule-block{display:flex;gap:11px;padding:12px 4px;border-bottom:1px dashed rgba(245,185,56,.15);align-items:flex-start;}
+.rule-block:last-child{border-bottom:none;}
+.rule-icon{
+  width:42px;height:42px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border:2px solid;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.18), inset 0 -2px 0 rgba(0,0,0,.25), 0 2px 0 rgba(0,0,0,.4);
+}
+.rule-icon i{font-size:20px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
+.ri-gold{background:linear-gradient(180deg,#ffd96b,#c08818);border-color:#6b4514;}.ri-gold i{color:#3a1f08;}
+.ri-warn{background:linear-gradient(180deg,#e8a420,#7a5008);border-color:#3a2008;}.ri-warn i{color:#fff;}
+.ri-danger{background:linear-gradient(180deg,#d94535,#5a1008);border-color:#3a0808;}.ri-danger i{color:#fff;}
+.ri-info{background:linear-gradient(180deg,#4a7fc8,#1a3a78);border-color:#0a1a3a;}.ri-info i{color:#fff;}
+.rule-txt{font-family:'Fredoka',sans-serif;font-weight:500;font-size:13px;color:var(--cream);line-height:1.55;flex:1;}
+.rule-txt strong{font-family:'Lilita One',sans-serif;font-weight:400;color:var(--gold-l);font-size:14px;letter-spacing:.02em;display:block;margin-bottom:2px;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+
+/* ╔════════════════════════════════════════════════════════════
+   MESSAGES
+   ════════════════════════════════════════════════════════════ */
+.msg-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.msg-card{
+  position:relative;
+  border:2px solid #6b4514;border-radius:9px;padding:12px 11px;cursor:pointer;
+  background:linear-gradient(180deg,#3a2418,#2a1810);
+  transition:all .15s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 3px 0 rgba(0,0,0,.4);
+}
+.msg-card:hover{border-color:var(--gold-d);}
+.msg-card.sel{
+  background:linear-gradient(180deg, rgba(245,185,56,.2), rgba(245,185,56,.06));
+  border-color:var(--gold);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15), 0 3px 0 #6b4514, 0 0 14px rgba(245,185,56,.35);
+}
+.msg-card-title{font-family:'Lilita One',sans-serif;font-size:12px;display:flex;align-items:center;gap:5px;margin-bottom:4px;color:var(--cream);letter-spacing:.04em;text-shadow:0 1px 0 rgba(0,0,0,.6);}
+.msg-card-title i{color:var(--gold);font-size:14px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));}
+.msg-card.sel .msg-card-title{color:var(--gold-l);}
+.msg-card.sel .msg-card-title i{color:var(--gold-l);}
+.msg-card-desc{font-family:'Fredoka',sans-serif;font-weight:500;font-size:10.5px;color:var(--tan-dim);line-height:1.4;}
+
+.msg-preview{
+  background:linear-gradient(180deg,#1a0d05,#0d0703);color:var(--cream);
+  border-radius:8px;padding:14px;border:2px solid #6b4514;
+  font-size:12.5px;line-height:1.7;font-family:'Fredoka',sans-serif;font-weight:500;white-space:pre-wrap;
+  margin-bottom:12px;max-height:340px;overflow-y:auto;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+}
+
+/* TEMPLATE EDITOR */
+.tpl-area{
+  width:100%;min-height:200px;padding:14px;
+  background:linear-gradient(180deg,#1a0d05,#0d0703);color:var(--cream);
+  border:2px solid #6b4514;border-radius:8px;
+  font-family:'Fredoka',sans-serif;font-weight:500;font-size:13px;line-height:1.7;
+  resize:vertical;outline:none;transition:all .2s;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+}
+.tpl-area:focus{border-color:var(--gold);box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 0 0 3px rgba(245,185,56,.18);}
+.var-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.var-chip{
+  display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:6px;
+  background:linear-gradient(180deg,#5a3a20,#3a2510);
+  border:1.5px solid #6b4514;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(0,0,0,.4);
+  transition:all .12s;
+}
+.var-chip:hover{border-color:var(--gold);background:linear-gradient(180deg,rgba(245,185,56,.16),rgba(245,185,56,.05));}
+.var-key{font-family:'Fredoka',sans-serif;font-weight:700;font-size:10px;color:var(--gold-l);letter-spacing:.02em;}
+
+/* ╔════════════════════════════════════════════════════════════
+   MODAL — wood scroll
+   ════════════════════════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;justify-content:center;z-index:500;padding:0;backdrop-filter:blur(5px);}
+.modal{
+  position:relative;
+  background:linear-gradient(180deg, var(--bg-plank) 0%, var(--bg-wood) 100%);
+  border:3px solid #6b4514;border-bottom:none;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:1.25rem;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+  box-shadow:0 -10px 36px rgba(0,0,0,.7);
+}
+.modal-handle{width:54px;height:5px;background:#6b4514;border-radius:3px;margin:0 auto 1rem;}
+.modal-title{
+  font-family:'Lilita One',sans-serif;font-size:18px;color:var(--gold-l);
+  letter-spacing:.04em;
+  text-shadow:0 2px 0 var(--gold-deep), 0 3px 4px rgba(0,0,0,.5);
+  margin-bottom:1.1rem;display:flex;align-items:center;gap:9px;
+  padding-bottom:12px;border-bottom:2px solid rgba(245,185,56,.18);
+}
+.modal-title i{color:var(--gold);font-size:22px;filter:drop-shadow(0 1px 0 var(--gold-deep));}
+.mf{margin-bottom:11px;}
+.mf label{font-family:'Lilita One',sans-serif;font-size:10px;color:var(--tan);display:block;margin-bottom:5px;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.5);}
+.mf input,.mf select,.mf textarea{
+  width:100%;background:linear-gradient(180deg,#1a0d05,#0d0703);
+  color:var(--cream);border:2px solid #6b4514;border-radius:7px;
+  padding:11px 13px;font-size:14px;outline:none;
+  font-family:'Fredoka',sans-serif;font-weight:600;letter-spacing:.02em;
+  transition:all .15s;-webkit-appearance:none;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.6);
+}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--gold);box-shadow:inset 0 2px 4px rgba(0,0,0,.6), 0 0 0 3px rgba(245,185,56,.2);}
+.mf textarea{min-height:64px;resize:vertical;}
+.mf select option{background:var(--bg-night);color:var(--cream);}
+.modal-actions{display:flex;gap:8px;justify-content:space-between;margin-top:1.5rem;align-items:center;flex-wrap:wrap;}
+.modal-actions .left{margin-right:auto;}
+
+/* MISC */
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--tan-dim);font-family:'Fredoka',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.04em;}
+.empty-state i{font-size:42px;display:block;margin-bottom:12px;color:rgba(245,185,56,.25);}
+.reset-note{
+  font-family:'Fredoka',sans-serif;font-weight:500;font-size:12.5px;color:var(--cream);
+  background:linear-gradient(180deg, rgba(74,127,200,.16), rgba(74,127,200,.05));
+  border:2px solid rgba(74,127,200,.45);border-radius:9px;
+  padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 0 rgba(0,0,0,.3);
+}
+.reset-note i{font-size:16px;color:var(--btxt);flex-shrink:0;}
+
+.toast{
+  position:fixed;bottom:calc(var(--tab-h) + 14px);left:50%;transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(180deg, #ffd96b 0%, #d99020 100%);
+  border:2px solid #6b4514;border-radius:9px;
+  padding:11px 18px;
+  font-family:'Lilita One',sans-serif;font-size:13px;color:#3a1f08;letter-spacing:.04em;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+  z-index:600;display:flex;align-items:center;gap:8px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.4), 0 4px 0 #6b4514, 0 8px 20px rgba(0,0,0,.5);
+  opacity:0;transition:all .25s;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast i{color:#3a1f08;font-size:16px;}
+
+/* SCROLLBARS */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--bg-night);}
+::-webkit-scrollbar-thumb{background:#6b4514;border-radius:4px;border:1px solid var(--bg-wood);}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-d);}
+
+/* DESKTOP */
+@media(min-width:640px){
+  .tab-nav{display:none;}
+  .desktop-tabs{display:block;}
+  .scroll-inner{padding-bottom:1.25rem;}
+  .metrics{grid-template-columns:repeat(4,1fr);}
+  .modal-overlay{align-items:center;padding:2rem;}
+  .modal{border-radius:var(--r-lg);border-bottom:3px solid #6b4514;max-width:520px;}
+  .modal-handle{display:none;}
+  .toast{bottom:2rem;}
+  .msg-options{grid-template-columns:repeat(4,1fr);}
+  .team-s{font-size:56px;}
+  .topbar-name{font-size:20px;}
+}
+
+/* ╔════════════════════════════════════════════════════════════
+   ANIMATIONS — transitions, particles, effects
+   ════════════════════════════════════════════════════════════ */
+
+/* Login screen entrance */
+@keyframes loginFadeIn {
+  from { opacity:0; transform:translateY(30px) scale(.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.login-box { animation: loginFadeIn .6s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Login shield pulse glow */
+@keyframes shieldPulse {
+  0%,100% { filter: drop-shadow(0 8px 20px rgba(0,0,0,.7)) drop-shadow(0 0 28px rgba(245,185,56,.35)); }
+  50%      { filter: drop-shadow(0 8px 20px rgba(0,0,0,.7)) drop-shadow(0 0 48px rgba(245,185,56,.7)) drop-shadow(0 0 80px rgba(255,138,61,.25)); }
+}
+.banner svg { animation: shieldPulse 2.8s ease-in-out infinite; }
+
+/* Login title shimmer */
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.login-title {
+  background: linear-gradient(90deg, #ffd96b 20%, #fff8dc 40%, #f5b938 50%, #fff8dc 60%, #ffd96b 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3.5s linear infinite;
+}
+
+/* Torch particle emitters */
+.torch-left, .torch-right {
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.torch-left  { left: 0; }
+.torch-right { right: 0; }
+
+@keyframes torchRise {
+  0%   { transform: translateY(0) translateX(0) scale(1);   opacity: .8; }
+  50%  { transform: translateY(-40vh) translateX(10px) scale(.6); opacity: .5; }
+  100% { transform: translateY(-80vh) translateX(-5px) scale(.2); opacity: 0; }
+}
+.spark {
+  position: absolute;
+  bottom: 15%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8a0 0%, #ff8a3d 50%, transparent 100%);
+  animation: torchRise linear infinite;
+  box-shadow: 0 0 8px #ff8a3d;
+}
+.spark:nth-child(1)  { left:10px; animation-duration:2.1s; animation-delay:0s;    width:5px; height:5px; }
+.spark:nth-child(2)  { left:18px; animation-duration:2.7s; animation-delay:.4s;   width:4px; height:4px; }
+.spark:nth-child(3)  { left:6px;  animation-duration:1.9s; animation-delay:.8s;   width:6px; height:6px; }
+.spark:nth-child(4)  { left:22px; animation-duration:2.4s; animation-delay:1.1s;  width:3px; height:3px; }
+.spark:nth-child(5)  { left:14px; animation-duration:3.0s; animation-delay:1.6s;  width:4px; height:4px; }
+
+/* LOGIN → APP transition overlay */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  opacity: 0;
+}
+#transition-overlay.playing {
+  pointer-events: all;
+  animation: gateOpen 1.1s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes gateOpen {
+  0%   { opacity: 0; background: radial-gradient(circle at 50% 50%, rgba(245,185,56,0) 0%, rgba(26,13,5,0) 100%); }
+  20%  { opacity: 1; background: radial-gradient(circle at 50% 50%, rgba(245,185,56,.6) 0%, rgba(26,13,5,.95) 60%); }
+  60%  { opacity: 1; background: radial-gradient(circle at 50% 50%, rgba(245,185,56,.3) 0%, rgba(26,13,5,.8) 80%); }
+  100% { opacity: 0; background: radial-gradient(circle at 50% 50%, rgba(245,185,56,0) 0%, rgba(26,13,5,0) 100%); }
+}
+
+/* APP sections fade in */
+@keyframes sectionSlideIn {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.section.active { animation: sectionSlideIn .32s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Cards stagger entrance */
+@keyframes cardPop {
+  from { opacity:0; transform:translateY(20px) scale(.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.card { animation: cardPop .35s cubic-bezier(.2,.8,.2,1) both; }
+.card:nth-child(2) { animation-delay:.06s; }
+.card:nth-child(3) { animation-delay:.12s; }
+.card:nth-child(4) { animation-delay:.18s; }
+
+/* WAR card special entrance */
+.war-card { animation: cardPop .35s cubic-bezier(.2,.8,.2,1) both; }
+.war-card:nth-child(2) { animation-delay:.08s; }
+.war-card:nth-child(3) { animation-delay:.16s; }
+
+/* Metric counters pop */
+@keyframes metricPop {
+  from { opacity:0; transform:scale(.7); }
+  to   { opacity:1; transform:scale(1); }
+}
+.metric { animation: metricPop .4s cubic-bezier(.34,1.56,.64,1) both; }
+.metric:nth-child(2) { animation-delay:.08s; }
+.metric:nth-child(3) { animation-delay:.16s; }
+.metric:nth-child(4) { animation-delay:.24s; }
+
+/* Tab nav icons bounce on active */
+@keyframes iconBounce {
+  0%   { transform:scale(1); }
+  40%  { transform:scale(1.25) translateY(-4px); }
+  70%  { transform:scale(.95); }
+  100% { transform:scale(1); }
+}
+.tn-btn.active i { animation: iconBounce .4s cubic-bezier(.34,1.56,.64,1); }
+
+/* Star rating shine */
+@keyframes starShine {
+  0%,100% { filter: drop-shadow(0 0 4px rgba(245,185,56,.4)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(245,185,56,.9)) drop-shadow(0 0 20px rgba(255,200,80,.5)); }
+}
+.stars span:not(.off) { animation: starShine 2s ease-in-out infinite; }
+
+/* Login button pulse on hover */
+.btn-chunky.lg:hover {
+  animation: btnGlow .6s ease-in-out infinite alternate;
+}
+@keyframes btnGlow {
+  from { box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -3px 0 rgba(0,0,0,.18), 0 4px 0 #6b4514, 0 6px 12px rgba(0,0,0,.45); }
+  to   { box-shadow: inset 0 2px 0 rgba(255,255,255,.45), inset 0 -3px 0 rgba(0,0,0,.18), 0 4px 0 #6b4514, 0 6px 24px rgba(245,185,56,.4), 0 0 40px rgba(245,185,56,.2); }
+}
+
+/* Toast slide up */
+@keyframes toastIn {
+  from { opacity:0; transform:translateX(-50%) translateY(20px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+#toast.show { animation: toastIn .28s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Filter pill bounce */
+.fc.active { animation: metricPop .25s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* War score bounce in */
+@keyframes scoreBounce {
+  from { opacity:0; transform:scale(.5); }
+  to   { opacity:1; transform:scale(1); }
+}
+.team-s { animation: scoreBounce .5s cubic-bezier(.34,1.56,.64,1) both; }
+.team-c.them .team-s { animation-delay:.12s; }
+
+/* Topbar slide down */
+@keyframes topbarSlide {
+  from { transform:translateY(-100%); opacity:0; }
+  to   { transform:translateY(0); opacity:1; }
+}
+.topbar { animation: topbarSlide .45s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Bottom nav slide up */
+@keyframes navSlideUp {
+  from { transform:translateY(100%); opacity:0; }
+  to   { transform:translateY(0); opacity:1; }
+}
+.tab-nav { animation: navSlideUp .45s .1s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Calendar day hover */
+.cal-day:not(.empty):hover {
+  transform: scale(1.06);
+  transition: transform .15s cubic-bezier(.34,1.56,.64,1), border-color .12s;
+}
+
+/* Member row hover */
+.player-row {
+  transition: background .15s;
+}
+.player-row:hover {
+  background: rgba(245,185,56,.05);
+  border-radius: 8px;
+}
+
+/* Chunky button press feel (already has :active, enhance) */
+.btn-chunky { transition: transform .08s, box-shadow .08s, filter .1s; }
+
+/* Badge entrance */
+@keyframes badgePop {
+  from { opacity:0; transform:scale(.6) rotate(-8deg); }
+  to   { opacity:1; transform:scale(1) rotate(0deg); }
+}
+.badge { animation: badgePop .3s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* Smoother scrollbar */
+.scroll-area { scroll-behavior: smooth; }
+
+</style>
+</head>
+<body>
+
+<!-- ╔══════════ LOGIN ══════════╗ -->
+<div id="transition-overlay"></div>
+<div id="login-screen">
+  
+  <div class="torch-left">
+    <div class="spark"></div><div class="spark"></div><div class="spark"></div>
+    <div class="spark"></div><div class="spark"></div>
+  </div>
+  <div class="torch-right">
+    <div class="spark"></div><div class="spark"></div><div class="spark"></div>
+    <div class="spark"></div><div class="spark"></div>
+  </div>
+
+  <div class="login-box">
+    <div class="banner">
+      <!-- Heraldic banner shield, geometric (square pommels, triangles, simple keep) -->
+      <svg viewBox="0 0 140 160" aria-hidden="true">
+        <defs>
+          <linearGradient id="shieldBody" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4a2f1c"/><stop offset="100%" stop-color="#1a0d05"/>
+          </linearGradient>
+          <linearGradient id="shieldGold" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffd96b"/><stop offset="50%" stop-color="#f5b938"/><stop offset="100%" stop-color="#b07614"/>
+          </linearGradient>
+        </defs>
+        <!-- shield outline -->
+        <path d="M 16 22 L 124 22 L 124 84 Q 124 116 70 152 Q 16 116 16 84 Z"
+              fill="url(#shieldBody)" stroke="url(#shieldGold)" stroke-width="4" stroke-linejoin="round"/>
+        <!-- inner highlight -->
+        <path d="M 22 28 L 118 28 L 118 84 Q 118 113 70 145 Q 22 113 22 84 Z"
+              fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+        <!-- crossed swords (rect + triangle pommels and tips) -->
+        <g transform="translate(70 80)">
+          <g transform="rotate(-32)">
+            <rect x="-2" y="-46" width="4" height="84" fill="#c8d0d8"/>
+            <rect x="-8" y="-50" width="16" height="6" fill="#3a2418"/>
+            <rect x="-3" y="38" width="6" height="6" fill="#f5b938"/>
+            <polygon points="-2,-50 2,-50 0,-58" fill="#c8d0d8"/>
+          </g>
+          <g transform="rotate(32)">
+            <rect x="-2" y="-46" width="4" height="84" fill="#c8d0d8"/>
+            <rect x="-8" y="-50" width="16" height="6" fill="#3a2418"/>
+            <rect x="-3" y="38" width="6" height="6" fill="#f5b938"/>
+            <polygon points="-2,-50 2,-50 0,-58" fill="#c8d0d8"/>
+          </g>
+        </g>
+        <!-- Center keep (geometric castle) over the swords -->
+        <g transform="translate(70 80)">
+          <!-- main wall -->
+          <rect x="-22" y="-4" width="44" height="20" fill="#7a5638" stroke="#3a2418" stroke-width="1.5"/>
+          <!-- crenellations -->
+          <rect x="-22" y="-8" width="6" height="4" fill="#7a5638" stroke="#3a2418" stroke-width="1"/>
+          <rect x="-12" y="-8" width="6" height="4" fill="#7a5638" stroke="#3a2418" stroke-width="1"/>
+          <rect x="-2" y="-8" width="6" height="4" fill="#7a5638" stroke="#3a2418" stroke-width="1"/>
+          <rect x="8" y="-8" width="6" height="4" fill="#7a5638" stroke="#3a2418" stroke-width="1"/>
+          <rect x="16" y="-8" width="6" height="4" fill="#7a5638" stroke="#3a2418" stroke-width="1"/>
+          <!-- center tower -->
+          <rect x="-7" y="-22" width="14" height="22" fill="#9a7048" stroke="#3a2418" stroke-width="1.5"/>
+          <polygon points="-9,-22 9,-22 0,-34" fill="#f5b938" stroke="#3a2418" stroke-width="1.5"/>
+          <!-- flag -->
+          <rect x="-.5" y="-44" width="1" height="14" fill="#3a2418"/>
+          <polygon points="0,-44 0,-37 8,-40.5" fill="#d94535" stroke="#3a2418" stroke-width=".8"/>
+          <!-- door (rect) -->
+          <rect x="-3" y="6" width="6" height="10" fill="#1a0d05"/>
+        </g>
+        <!-- banner ribbon at top -->
+        <rect x="20" y="6" width="100" height="22" fill="url(#shieldGold)" stroke="#6b4514" stroke-width="2"/>
+        <polygon points="20,28 30,28 20,36" fill="#6b4514"/>
+        <polygon points="120,28 110,28 120,36" fill="#6b4514"/>
+        <text x="70" y="22" text-anchor="middle" font-family="Lilita One" font-size="13" fill="#3a1f08" letter-spacing="1.5">BAD BOYS</text>
+      </svg>
+    </div>
+    <div class="login-title">Bad Boys <span class="num">5</span></div>
+    <div class="login-sub">Painel do Clã</div>
+    <div class="login-divider">⚔ Senha do Castelo ⚔</div>
+    <div class="login-field">
+      <i class="ti ti-key fi"></i>
+      <input type="password" id="pwd-input" placeholder="• • • •" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-chunky login-btn full lg" onclick="doLogin()"><i class="ti ti-door-enter"></i>Entrar no Clã</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-version">v3.0 · claravossai.github.io/bb5</div>
+  </div>
+</div>
+
+<!-- ╔══════════ APP ══════════╗ -->
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-icon">
+        <!-- Mini shield icon (matches login) -->
+        <svg viewBox="0 0 44 44" aria-hidden="true">
+          <path d="M 6 7 L 38 7 L 38 25 Q 38 33 22 41 Q 6 33 6 25 Z" fill="#2a1810" stroke="#f5b938" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="14" y="18" width="16" height="10" fill="#9a7048" stroke="#1a0d05" stroke-width=".8"/>
+          <rect x="14" y="16" width="3" height="3" fill="#9a7048" stroke="#1a0d05" stroke-width=".5"/>
+          <rect x="20.5" y="16" width="3" height="3" fill="#9a7048" stroke="#1a0d05" stroke-width=".5"/>
+          <rect x="27" y="16" width="3" height="3" fill="#9a7048" stroke="#1a0d05" stroke-width=".5"/>
+          <rect x="19" y="12" width="6" height="6" fill="#b88858" stroke="#1a0d05" stroke-width=".5"/>
+          <polygon points="19,12 25,12 22,7" fill="#f5b938" stroke="#1a0d05" stroke-width=".5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="topbar-name">Bad Boys 5<span class="com">Clash Empire</span></div>
+        <div class="topbar-sub" id="topbar-sub">carregando...</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="model-pill m1" id="modelPill" onclick="toggleModel()">
+        <i class="ti ti-swords"></i><span id="modelTxt">M1</span>
+      </div>
+      <div class="sync-indicator" id="syncInd"><i class="ti ti-cloud"></i><span id="syncTxt">sync</span></div>
+      <button class="logout-btn" onclick="doLogout()" title="Sair"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+
+  <!-- DESKTOP TABS -->
+  <div class="desktop-tabs">
+    <div class="tabs-inner">
+      <button class="dt-btn active" onclick="showTab('membros')"><i class="ti ti-users"></i>Membros</button>
+      <button class="dt-btn" onclick="showTab('guerras')"><i class="ti ti-swords"></i>Guerras</button>
+      <button class="dt-btn" onclick="showTab('doacoes')"><i class="ti ti-gift"></i>Doações</button>
+      <button class="dt-btn" onclick="showTab('calendario')"><i class="ti ti-calendar"></i>Calendário</button>
+      <button class="dt-btn" onclick="showTab('regras')"><i class="ti ti-book-2"></i>Regras</button>
+      <button class="dt-btn" onclick="showTab('mensagens')"><i class="ti ti-message"></i>Mensagens</button>
+    </div>
+  </div>
+
+  <!-- SCROLL -->
+  <div class="scroll-area">
+    <div class="scroll-inner">
+
+      <!-- MEMBROS -->
+      <div id="membros" class="section active">
+        <div class="metrics" id="memMetrics"></div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-users"></i>Roster do Clã</div>
+            <button class="add-btn" onclick="openModal('addMember')"><i class="ti ti-plus"></i>Adicionar</button>
+          </div>
+          <div class="filter-bar">
+            <button class="fc active" onclick="filterM('todos',this)">Todos</button>
+            <button class="fc" onclick="filterM('lideranca',this)">Liderança</button>
+            <button class="fc" onclick="filterM('ativo',this)">Escudo verde</button>
+            <button class="fc" onclick="filterM('advertido',this)">Advertidos</button>
+          </div>
+          <div id="memberList"></div>
+        </div>
+      </div>
+
+      <!-- GUERRAS -->
+      <div id="guerras" class="section">
+        <div class="metrics" id="warMetrics"></div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-swords"></i>Histórico de Batalhas</div>
+            <button class="add-btn" onclick="openModal('addWar')"><i class="ti ti-plus"></i>Registrar</button>
+          </div>
+          <div id="warList"></div>
+        </div>
+      </div>
+
+      <!-- DOAÇÕES -->
+      <div id="doacoes" class="section">
+        <div class="reset-note"><i class="ti ti-refresh"></i>Reset mensal: última segunda do mês. Atualize com os totais do jogo.</div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-gift"></i>Doações do Clã</div>
+            <button class="add-btn" onclick="openModal('addDon')"><i class="ti ti-plus"></i>Atualizar</button>
+          </div>
+          <div class="season-tabs" id="seasonTabs"></div>
+          <div class="metrics" id="donMetrics"></div>
+          <div class="col-hdr" style="grid-template-columns:26px 44px 1fr 58px 58px 46px 36px;gap:8px;">
+            <span></span><span></span><span>Jogador</span><span style="text-align:right">Env.</span><span style="text-align:right">Rec.</span><span style="text-align:right">Razão</span><span></span>
+          </div>
+          <div id="donList"></div>
+          <button class="add-btn" style="margin-top:14px;" onclick="closeSeasonConfirm()"><i class="ti ti-archive"></i>Encerrar temporada</button>
+        </div>
+      </div>
+
+      <!-- CALENDÁRIO -->
+      <div id="calendario" class="section">
+        <div class="legend">
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#6ab53a,#2b5008);"></div>Guerra</div>
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#4a7fc8,#1a3a78);"></div>Raid</div>
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#ffd96b,#c08818);"></div>CWL</div>
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#e8a420,#7a5008);"></div>Games</div>
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#7a5e3a,#3a2510);"></div>Adm</div>
+          <div class="leg-i"><div class="leg-d" style="background:linear-gradient(180deg,#b85dc8,#5d1875);"></div>Custom</div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-calendar"></i><span id="calMonthTitle"></span></div>
+            <div style="display:flex;gap:6px;">
+              <button class="add-btn" onclick="prevMonth()" style="padding:7px 11px;"><i class="ti ti-chevron-left"></i></button>
+              <button class="add-btn" onclick="nextMonth()" style="padding:7px 11px;"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+          <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:11.5px;color:var(--tan);margin-bottom:10px;letter-spacing:.04em;">Toque em um dia para adicionar atividade</div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-list-details"></i>Atividades fixas</div>
+            <button class="add-btn" onclick="openModal('addFixed')"><i class="ti ti-plus"></i>Nova</button>
+          </div>
+          <div id="fixedList"></div>
+        </div>
+      </div>
+
+      <!-- REGRAS -->
+      <div id="regras" class="section">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-book-2"></i>Livro de Leis</div>
+            <button class="add-btn" onclick="openModal('addRule')"><i class="ti ti-plus"></i>Nova</button>
+          </div>
+          <div id="ruleList"></div>
+        </div>
+      </div>
+
+      <!-- MENSAGENS -->
+      <div id="mensagens" class="section">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title"><i class="ti ti-message"></i>Mensagens</div></div>
+          <div class="msg-options" id="msgTypePicker">
+            <div class="msg-card sel" onclick="selMsgType('chat_aviso',this)"><div class="msg-card-title"><i class="ti ti-message-circle"></i>Chat — aviso</div><div class="msg-card-desc">Curto, regra rápida</div></div>
+            <div class="msg-card" onclick="selMsgType('chat_horario',this)"><div class="msg-card-title"><i class="ti ti-clock"></i>Chat — 2º atk</div><div class="msg-card-desc">Libera últimas 12h</div></div>
+            <div class="msg-card" onclick="selMsgType('wpp_membros',this)"><div class="msg-card-title"><i class="ti ti-brand-whatsapp"></i>WPP membros</div><div class="msg-card-desc">Boletim elaborado</div></div>
+            <div class="msg-card" onclick="selMsgType('wpp_adms',this)"><div class="msg-card-title"><i class="ti ti-shield-check"></i>WPP adms</div><div class="msg-card-desc">Relatório 15 clãs</div></div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <div style="font-family:'Fredoka',sans-serif;font-weight:500;font-size:11.5px;color:var(--tan);letter-spacing:.02em;">Edite o template — <code style="background:rgba(0,0,0,.4);padding:2px 6px;border-radius:4px;font-size:10px;color:var(--gold-l);border:1px solid var(--gold-deep);font-family:'Fredoka',monospace;">{chaves}</code> são substituídas pelos dados reais</div>
+            <button class="add-btn" onclick="resetTpl()" style="font-size:10px;padding:5px 10px;">Restaurar</button>
+          </div>
+          <textarea class="tpl-area" id="tplArea" oninput="onTplEdit()"></textarea>
+
+          <div style="font-family:'Lilita One',sans-serif;font-size:10px;color:var(--tan);margin:12px 0 6px;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.5);">Inserir variável:</div>
+          <div class="var-grid" id="varGrid"></div>
+
+          <div style="font-family:'Lilita One',sans-serif;font-size:10px;color:var(--tan);margin:12px 0 6px;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.5);">Pré-visualização:</div>
+          <div class="msg-preview" id="msgPreview"></div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn-chunky green" id="copyMsgBtn" onclick="copyMsg()"><i class="ti ti-brand-whatsapp"></i>Copiar</button>
+            <button class="btn-chunky stone" onclick="openWA()"><i class="ti ti-external-link"></i>WhatsApp</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="tab-nav">
+    <button class="tn-btn active" onclick="showTab('membros')"><i class="ti ti-users"></i>Membros</button>
+    <button class="tn-btn" onclick="showTab('guerras')"><i class="ti ti-swords"></i>Guerras</button>
+    <button class="tn-btn" onclick="showTab('doacoes')"><i class="ti ti-gift"></i>Doações</button>
+    <button class="tn-btn" onclick="showTab('calendario')"><i class="ti ti-calendar"></i>Calend.</button>
+    <button class="tn-btn" onclick="showTab('regras')"><i class="ti ti-book-2"></i>Regras</button>
+    <button class="tn-btn" onclick="showTab('mensagens')"><i class="ti ti-message"></i>Msg</button>
+  </div>
+</div>
+
+<div id="modal" style="display:none;" class="modal-overlay"><div class="modal" id="modalContent"></div></div>
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toastMsg">Salvo!</span></div>
+
+<script>
+/* ═════════════════════════════════════════════════════════════
+   BB5 — Painel do Clã
+   ═════════════════════════════════════════════════════════════ */
+const SHEET_ID = '13z4jNCO9kwjHxmfQwvHVYv8JIiG8jdp0XtY4bL7Wc9I';
+const PASSWORDS = { 'bb5': 'lider' };
+const APPS_SCRIPT_URL = '';
+
+const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MONTHS_S=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const DAYS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function mKey(y,m){return`${MONTHS_S[m]}/${String(y).slice(-2)}`;}
+function mLabel(y,m){return`${MONTHS_PT[m]} ${y}`;}
+function starsHtml(n){let h='';for(let i=0;i<3;i++)h+=`<span class="${i<n?'':'off'}">★</span>`;return`<span class="stars">${h}</span>`;}
+
+/* ═════════════════════════════════════════════════════════════
+   CASTLE BADGES — original geometric keep silhouettes
+   Each tier (1–6) renders a chunky stylized castle using only
+   rectangles & triangles. The TH number is shown on a gold ribbon.
+   ═════════════════════════════════════════════════════════════ */
+function thTier(th){
+  if(th<=3)return 1; if(th<=6)return 2; if(th<=9)return 3;
+  if(th<=12)return 4; if(th<=15)return 5; return 6;
+}
+function rolePipIcon(r){
+  if(r==='lider')return 'crown';
+  if(r==='co-lider')return 'star';
+  if(r==='veterano')return 'shield-check';
+  return null;
+}
+/* Returns the inner SVG shapes (no <svg> wrapper) for a tier.
+   Built only from <rect> and <polygon> per geometry rules. */
+function castleShapes(tier){
+  // Color schemes per tier — wall fill, wall stroke, roof color, roof stroke, flag color, accent
+  const C = {
+    1: { wall:'#c89070', stroke:'#3a1f08', roof:'#7a4528', flag:'#d94535' }, // wood hut
+    2: { wall:'#a8856a', stroke:'#3a2010', roof:'#6a3818', flag:'#d94535' }, // wooden keep
+    3: { wall:'#a8a098', stroke:'#1a0d05', roof:'#5a4838', flag:'#4a7fc8' }, // stone fortress
+    4: { wall:'#c0a880', stroke:'#1a0d05', roof:'#f5b938', flag:'#d94535' }, // gold-roofed castle
+    5: { wall:'#7a6048', stroke:'#1a0d05', roof:'#d94535', flag:'#3a1f08' }, // crimson lord
+    6: { wall:'#3a2840', stroke:'#0d0510', roof:'#ff8a3d', flag:'#ff8a3d' }, // obsidian
+  }[tier];
+  // ViewBox 48 x 44 for the silhouette
+  if(tier===1){
+    // small hut: 1 wall + triangle roof + door
+    return `
+      <rect x="14" y="22" width="20" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="11,22 37,22 24,11" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="21" y="28" width="6" height="8" fill="${C.stroke}"/>
+      <rect x="16" y="14" width="3" height="3" fill="${C.stroke}"/>
+    `;
+  }
+  if(tier===2){
+    // keep with crenellations
+    return `
+      <rect x="9" y="22" width="30" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="9" y="19" width="4" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1"/>
+      <rect x="16" y="19" width="4" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1"/>
+      <rect x="23" y="19" width="4" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1"/>
+      <rect x="30" y="19" width="4" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1"/>
+      <rect x="19" y="12" width="10" height="10" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="17,12 31,12 24,4" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="22" y="28" width="4" height="8" fill="${C.stroke}"/>
+      <rect x="23.4" y="3" width="1.2" height="6" fill="${C.stroke}"/>
+      <polygon points="24,3 32,5.5 24,8" fill="${C.flag}" stroke="${C.stroke}" stroke-width=".7"/>
+    `;
+  }
+  if(tier===3){
+    // stone fortress: two side towers + center
+    return `
+      <rect x="3" y="16" width="9" height="20" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="36" y="16" width="9" height="20" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="12" y="22" width="24" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="18" y="11" width="12" height="11" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <!-- crenellations -->
+      <rect x="3" y="13" width="2.5" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="6.5" y="13" width="2.5" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="10" y="13" width="2" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="36" y="13" width="2" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="39.5" y="13" width="2.5" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="43" y="13" width="2.5" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <!-- roof on center -->
+      <polygon points="16,11 32,11 24,3" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="23.4" y="3" width="1.2" height="5" fill="${C.stroke}"/>
+      <polygon points="24,2 31,4 24,6" fill="${C.flag}" stroke="${C.stroke}" stroke-width=".6"/>
+      <!-- door -->
+      <rect x="22" y="28" width="4" height="8" fill="${C.stroke}"/>
+      <!-- windows -->
+      <rect x="5.5" y="22" width="3" height="4" fill="${C.stroke}"/>
+      <rect x="39.5" y="22" width="3" height="4" fill="${C.stroke}"/>
+    `;
+  }
+  if(tier===4){
+    // grand castle with gold roof
+    return `
+      <rect x="3" y="14" width="9" height="22" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="36" y="14" width="9" height="22" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="12" y="22" width="24" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="17" y="9" width="14" height="13" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="0,14 15,14 7.5,5" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="33,14 48,14 40.5,5" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="15,9 33,9 24,0" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <!-- door -->
+      <rect x="21" y="26" width="6" height="10" fill="${C.stroke}"/>
+      <polygon points="21,26 27,26 24,24" fill="${C.stroke}"/>
+      <!-- windows -->
+      <rect x="5.5" y="20" width="4" height="5" fill="${C.stroke}"/>
+      <rect x="38.5" y="20" width="4" height="5" fill="${C.stroke}"/>
+      <rect x="22" y="13" width="4" height="5" fill="${C.stroke}"/>
+    `;
+  }
+  if(tier===5){
+    // dark stone + crimson roof
+    return `
+      <rect x="3" y="14" width="9" height="22" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="36" y="14" width="9" height="22" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="12" y="22" width="24" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <rect x="17" y="7" width="14" height="15" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="0,14 15,14 7.5,5" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="33,14 48,14 40.5,5" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <polygon points="14,7 34,7 24,-2" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+      <!-- bottom crenellations -->
+      <rect x="12" y="19" width="3" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="17" y="19" width="3" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="28" y="19" width="3" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <rect x="33" y="19" width="3" height="3" fill="${C.wall}" stroke="${C.stroke}" stroke-width=".8"/>
+      <!-- door -->
+      <rect x="21" y="26" width="6" height="10" fill="#1a0d05"/>
+      <polygon points="21,26 27,26 24,24" fill="#1a0d05"/>
+      <!-- glowing windows -->
+      <rect x="5.5" y="20" width="4" height="5" fill="#ff8a3d"/>
+      <rect x="38.5" y="20" width="4" height="5" fill="#ff8a3d"/>
+      <rect x="22" y="12" width="4" height="5" fill="#ff8a3d"/>
+    `;
+  }
+  // tier 6 — obsidian with lava roof + extra accents
+  return `
+    <rect x="2" y="12" width="10" height="24" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <rect x="36" y="12" width="10" height="24" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <rect x="12" y="22" width="24" height="14" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <rect x="16" y="4" width="16" height="18" fill="${C.wall}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <polygon points="-1,12 15,12 7,3" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <polygon points="33,12 49,12 41,3" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <polygon points="13,4 35,4 24,-5" fill="${C.roof}" stroke="${C.stroke}" stroke-width="1.5"/>
+    <rect x="20" y="-3" width="1.2" height="6" fill="${C.stroke}"/>
+    <polygon points="20.6,-3 27,-1 20.6,1" fill="${C.flag}" stroke="${C.stroke}" stroke-width=".5"/>
+    <rect x="21" y="26" width="6" height="10" fill="#0d0510"/>
+    <polygon points="21,26 27,26 24,24" fill="#0d0510"/>
+    <rect x="4.5" y="18" width="5" height="6" fill="${C.flag}"/>
+    <rect x="38.5" y="18" width="5" height="6" fill="${C.flag}"/>
+    <rect x="21" y="10" width="6" height="7" fill="${C.flag}"/>
+  `;
+}
+function thBadge(th, role, size){
+  const t = thTier(th);
+  const sz = size==='sm'?'sm':size==='lg'?'lg':'';
+  const rc = role==='lider'?'r-lider':role==='co-lider'?'r-co':role==='veterano'?'r-vet':'';
+  const pip = rolePipIcon(role);
+  const pipHtml = pip ? `<span class="pip"><i class="ti ti-${pip}"></i></span>` : '';
+  return `<div class="th-badge t${t} ${rc} ${sz}" title="TH${th}">
+    <svg class="castle" viewBox="0 0 48 44" aria-hidden="true">${castleShapes(t)}</svg>
+    ${pipHtml}
+    <span class="th-num">${th}</span>
+  </div>`;
+}
+
+/* ═════════════════ LOGIN ═════════════════ */
+function doLogin(){
+  const v=document.getElementById('pwd-input').value.trim().toLowerCase();
+  if(PASSWORDS[v]){
+    sessionStorage.setItem('bb5_auth','1');
+    sessionStorage.setItem('bb5_role',PASSWORDS[v]);
+    // Animated gate transition
+    const overlay=document.getElementById('transition-overlay');
+    overlay.classList.add('playing');
+    setTimeout(()=>{
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').classList.add('ready');
+      initApp();
+    }, 420);
+    setTimeout(()=>overlay.classList.remove('playing'), 1100);
+  } else {
+    const el=document.getElementById('login-err');
+    el.textContent='⚠ Senha incorreta. Os portões permanecem fechados.';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+    setTimeout(()=>el.textContent='',3000);
+  }
+}
+function doLogout(){
+  if(confirm('Sair do painel?')){
+    sessionStorage.clear();
+    location.reload();
+  }
+}
+if(sessionStorage.getItem('bb5_auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('ready');
+}
+
+/* ═════════════════ STATE ═════════════════ */
+const DEFAULT={
+  model:1,calYear:2026,calMonth:4,currentFilter:'todos',currentSeason:'mai/26',nextId:50,
+  members:[
+    {id:1,name:'VocêAdm',role:'lider',status:'ativo',warns:0,th:15,joined:'jan/24'},
+    {id:2,name:'CoLider01',role:'co-lider',status:'ativo',warns:0,th:14,joined:'fev/24'},
+    {id:3,name:'CoLider02',role:'co-lider',status:'ativo',warns:0,th:14,joined:'mar/24'},
+    {id:4,name:'Guerreiro01',role:'membro',status:'ativo',warns:0,th:13,joined:'mai/24'},
+    {id:5,name:'Guerreiro02',role:'membro',status:'ativo',warns:1,th:12,joined:'ago/24'},
+    {id:6,name:'Guerreiro03',role:'membro',status:'inativo',warns:0,th:11,joined:'nov/24'},
+    {id:7,name:'Arqueiro01',role:'membro',status:'ativo',warns:0,th:13,joined:'jan/25'},
+    {id:8,name:'Novato01',role:'membro',status:'ativo',warns:2,th:10,joined:'mar/26'},
+  ],
+  wars:[
+    {id:1,date:'10/05/2026',opp:'Dark Legion',ourS:54,theirS:48,size:20,attacks:[
+      {id:'a1',p:'VocêAdm',t:'#1',stars:3,mode:'espelho'},
+      {id:'a2',p:'CoLider01',t:'#2',stars:3,mode:'espelho'},
+      {id:'a3',p:'CoLider02',t:'#3',stars:2,mode:'espelho'},
+    ]},
+    {id:2,date:'06/05/2026',opp:'Storm Riders',ourS:41,theirS:44,size:15,attacks:[
+      {id:'a6',p:'VocêAdm',t:'#1',stars:3,mode:'espelho'},
+    ]},
+  ],
+  donations:{
+    'mai/26':[
+      {player:'VocêAdm',sent:450,recv:120},{player:'CoLider01',sent:380,recv:90},
+      {player:'CoLider02',sent:310,recv:150},{player:'Guerreiro01',sent:220,recv:200},
+      {player:'Guerreiro02',sent:80,recv:300},{player:'Guerreiro03',sent:10,recv:50},
+      {player:'Arqueiro01',sent:190,recv:80},{player:'Novato01',sent:30,recv:220},
+    ],
+    'abr/26':[
+      {player:'VocêAdm',sent:520,recv:140},{player:'CoLider01',sent:410,recv:110},
+    ],
+  },
+  rules:[
+    {id:'r1',title:'Escudo verde obrigatório',text:'Nos dois modelos, somente jogadores com escudo verde participam das guerras.',icon:'shield-half',color:'gold'},
+    {id:'r2',title:'1º ataque — obrigatoriamente no espelho',text:'Atacar a mesma posição que você ocupa no ranking de guerra. Sem exceções.',icon:'swords',color:'gold'},
+    {id:'r3',title:'2º ataque — somente nas últimas 12 horas',text:'Aguardar o horário definido pela liderança antes de usar o segundo ataque.',icon:'clock',color:'gold'},
+    {id:'r4',title:'Heróis 100% disponíveis',text:'Obrigatório ter todos os heróis sem upgrade ativo para entrar nas guerras.',icon:'users',color:'info'},
+    {id:'r5',title:'Ataque errado = punição',text:'Ficar de fora das próximas guerras ou ser removido do clã.',icon:'alert-triangle',color:'warn'},
+    {id:'r6',title:'Ataque ruim / inatividade',text:'Afastamento ou expulsão. No Modelo 2, mínimo 1 ataque = obrigatório.',icon:'skull',color:'danger'},
+    {id:'r7',title:'CWL — Modelo 1 permanente',text:'Durante a Liga de Guerra de Clãs, sempre Modelo 1.',icon:'trophy',color:'danger'},
+    {id:'r8',title:'Mudança de modelo',text:'Falha da administração → Modelo 2. Bom desempenho = manter Modelo 1.',icon:'refresh',color:'warn'},
+  ],
+  fixedTasks:[
+    {id:'f1',title:'Seg / Qui / Dom — guerra regular',text:'1º no espelho, 2º nas últimas 12h.',icon:'calendar-week',color:'gold'},
+    {id:'f2',title:'Sex / Sáb / Dom — Raid Weekend',text:'Começa sexta 4h (Brasília). Cobrar participação.',icon:'shield',color:'info'},
+    {id:'f3',title:'Início do mês — atualizar tudo',text:'Doações, membros ingressados e advertências.',icon:'refresh',color:'warn'},
+    {id:'f4',title:'Dias 1–11 — CWL',text:'Modelo 1 obrigatório. Escudo verde + heróis disponíveis.',icon:'trophy',color:'danger'},
+    {id:'f5',title:'Dias 22–28 — Clan Games',text:'Mobilizar membros para o tier mais alto possível.',icon:'star',color:'warn'},
+  ],
+  customEvents:{},
+  templates:{},
+};
+
+let state;
+function loadState(){
+  try{const s=localStorage.getItem('bb5_v2');if(s)return JSON.parse(s);}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function saveState(){
+  try{localStorage.setItem('bb5_v2',JSON.stringify(state));setSyncUI('ok');}catch(e){setSyncUI('err');}
+}
+function setSyncUI(status){
+  const el=document.getElementById('syncInd');
+  const txt=document.getElementById('syncTxt');
+  if(!el)return;
+  el.className='sync-indicator '+status;
+  if(status==='ok'){el.querySelector('i').className='ti ti-cloud-check';txt.textContent='salvo';}
+  else if(status==='syncing'){el.querySelector('i').className='ti ti-cloud-upload';txt.textContent='salvando...';}
+  else{el.querySelector('i').className='ti ti-cloud-off';txt.textContent='erro';}
+}
+
+let modalType=null,currentRecordId=null,currentDayKey=null;
+
+/* ═════════════════ TOAST ═════════════════ */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ═════════════════ INIT ═════════════════ */
+function initApp(){
+  state=loadState();
+  renderMembers(state.currentFilter);
+  updateTopbar();
+  buildVarGrid();
+  selMsgType('chat_aviso',document.querySelector('.msg-card'));
+}
+if(sessionStorage.getItem('bb5_auth')==='1') setTimeout(initApp,0);
+
+/* ═════════════════ TOPBAR ═════════════════ */
+function updateTopbar(){
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  document.getElementById('topbar-sub').textContent=`${state.members.length} membros · ${active} ativos · Modelo ${state.model}`;
+  const p=document.getElementById('modelPill');
+  document.getElementById('modelTxt').textContent='M'+state.model;
+  p.className='model-pill '+(state.model===1?'m1':'m2');
+}
+function toggleModel(){
+  state.model=state.model===1?2:1;
+  saveState();updateTopbar();toast('Modelo '+state.model+' ativado');
+}
+
+/* ═════════════════ TABS ═════════════════ */
+function showTab(tab){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.dt-btn,.tn-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  document.querySelectorAll('.dt-btn,.tn-btn').forEach(b=>{
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+tab+"'"))b.classList.add('active');
+  });
+  document.querySelector('.scroll-area').scrollTo(0,0);
+  if(tab==='membros')renderMembers(state.currentFilter);
+  if(tab==='guerras')renderWars();
+  if(tab==='doacoes')renderDonations();
+  if(tab==='calendario')buildCalendar();
+  if(tab==='regras')renderRules();
+}
+
+/* ═════════════════ LABELS ═════════════════ */
+function roleLabel(r){
+  if(r==='lider')return'<span class="badge bgold"><i class="ti ti-crown"></i>Líder</span>';
+  if(r==='co-lider')return'<span class="badge bb"><i class="ti ti-shield"></i>Co-líder</span>';
+  if(r==='veterano')return'<span class="badge bg"><i class="ti ti-star"></i>Veterano</span>';
+  return'<span class="badge bmem">Membro</span>';
+}
+function statusLabel(s,w){
+  if(w>=2)return'<span class="badge br"><i class="ti ti-alert-circle"></i>Advertido</span>';
+  if(s==='ativo')return'<span class="badge bg"><i class="ti ti-circle-check"></i>Ativo</span>';
+  return'<span class="badge bw"><i class="ti ti-clock"></i>Inativo</span>';
+}
+
+/* ═════════════════ MEMBERS ═════════════════ */
+function renderMembers(filter){
+  let list=state.members;
+  if(filter==='lideranca')list=list.filter(m=>m.role!=='membro');
+  else if(filter==='ativo')list=list.filter(m=>m.status==='ativo'&&m.warns<2);
+  else if(filter==='advertido')list=list.filter(m=>m.warns>=1);
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  document.getElementById('memMetrics').innerHTML=`
+    <div class="metric"><div class="m-icon"><i class="ti ti-users"></i></div><div class="metric-body"><div class="metric-val">${state.members.length}</div><div class="metric-lbl">Membros</div></div></div>
+    <div class="metric green"><div class="m-icon"><i class="ti ti-shield-check"></i></div><div class="metric-body"><div class="metric-val">${active}</div><div class="metric-lbl">Escudo Verde</div></div></div>
+    <div class="metric yel"><div class="m-icon"><i class="ti ti-zzz"></i></div><div class="metric-body"><div class="metric-val">${state.members.filter(m=>m.status==='inativo').length}</div><div class="metric-lbl">Inativos</div></div></div>
+    <div class="metric red"><div class="m-icon"><i class="ti ti-alert-triangle"></i></div><div class="metric-body"><div class="metric-val">${state.members.filter(m=>m.warns>=1).length}</div><div class="metric-lbl">Advertidos</div></div></div>`;
+  document.getElementById('memberList').innerHTML=list.length?list.map(m=>{
+    const adv=m.warns>0?` · <span class="adv">${m.warns} adv.</span>`:'';
+    return`<div class="player-row">
+      ${thBadge(m.th, m.role)}
+      <div class="player-info"><div class="player-name">${m.name}</div><div class="player-meta">TH${m.th} · ${m.joined||'—'}${adv}</div></div>
+      <div class="badges">${roleLabel(m.role)}${statusLabel(m.status,m.warns)}</div>
+      <div class="row-actions">
+        <div class="warn-stack">
+          <button class="wmini up" onclick="warnM(${m.id},1)" title="Add"><i class="ti ti-plus"></i></button>
+          <button class="wmini down" onclick="warnM(${m.id},-1)" title="Remover"><i class="ti ti-minus"></i></button>
+        </div>
+        <button class="icon-btn" onclick="openModal('editMember',${m.id})"><i class="ti ti-edit"></i></button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty-state"><i class="ti ti-users-off"></i>Nenhum guerreiro encontrado</div>';
+}
+function warnM(id,d){const m=state.members.find(x=>x.id===id);if(m){m.warns=Math.max(0,m.warns+d);saveState();renderMembers(state.currentFilter);}}
+function filterM(f,el){state.currentFilter=f;document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderMembers(f);}
+
+/* ═════════════════ WARS ═════════════════ */
+function renderWars(){
+  const wins=state.wars.filter(w=>w.ourS>w.theirS).length;
+  const losses=state.wars.filter(w=>w.ourS<w.theirS).length;
+  const totalS=state.wars.reduce((a,w)=>a+w.ourS,0);
+  document.getElementById('warMetrics').innerHTML=`
+    <div class="metric"><div class="m-icon"><i class="ti ti-swords"></i></div><div class="metric-body"><div class="metric-val">${state.wars.length}</div><div class="metric-lbl">Guerras</div></div></div>
+    <div class="metric green"><div class="m-icon"><i class="ti ti-trophy"></i></div><div class="metric-body"><div class="metric-val">${wins}</div><div class="metric-lbl">Vitórias</div></div></div>
+    <div class="metric red"><div class="m-icon"><i class="ti ti-skull"></i></div><div class="metric-body"><div class="metric-val">${losses}</div><div class="metric-lbl">Derrotas</div></div></div>
+    <div class="metric"><div class="m-icon"><i class="ti ti-star-filled"></i></div><div class="metric-body"><div class="metric-val" style="color:var(--gold-l)">${totalS}</div><div class="metric-lbl">Estrelas</div></div></div>`;
+  document.getElementById('warList').innerHTML=state.wars.map(w=>{
+    const res=w.ourS>w.theirS?'win':w.ourS<w.theirS?'loss':'draw';
+    const rl=res==='win'?'🏆 Vitória':res==='loss'?'☠ Derrota':'⚖ Empate';
+    const pct=Math.round((w.ourS/(w.size*3))*100);
+    const bClass=res==='win'?'win-b':res==='loss'?'loss-b':'draw-b';
+    return`<div class="war-card ${res}">
+      <div class="war-hdr">
+        <div>
+          <div class="war-meta-name">${w.opp} <span class="vs">· ${w.date}</span></div>
+          <div class="war-sub">${w.size}v${w.size} · ${w.attacks.length} ataques</div>
+        </div>
+        <div class="war-actions">
+          <span class="rbadge ${bClass}">${rl}</span>
+          <button class="icon-btn" onclick="openModal('editWar',${w.id})"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn danger" onclick="deleteWar(${w.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div class="war-score">
+        <div class="team-c ours">
+          <div class="team-n">Bad Boys 5</div>
+          <div class="team-s">${w.ourS}<span class="team-star">★</span></div>
+        </div>
+        <div class="vs-glyph">VS</div>
+        <div class="team-c them">
+          <div class="team-n">${w.opp}</div>
+          <div class="team-s">${w.theirS}<span class="team-star">★</span></div>
+        </div>
+      </div>
+      <div class="pbar"><div class="pfill ${res}" style="width:${pct}%;"></div></div>
+      ${w.attacks.length?`<div class="atk-list">${w.attacks.map(a=>`<div class="atk-row"><span class="atk-p">${a.p}</span><span class="atk-arrow">→ ${a.t}</span>${starsHtml(a.stars)}<span class="badge ${a.mode==='espelho'?'bg':'bb'}">${a.mode}</span><button class="icon-btn danger" style="margin-left:auto" onclick="deleteAtk(${w.id},'${a.id}')"><i class="ti ti-x"></i></button></div>`).join('')}</div>`:''}
+      <div class="war-foot"><button class="add-btn" onclick="openModal('addAtk',${w.id})"><i class="ti ti-plus"></i>Ataque</button></div>
+    </div>`;
+  }).join('')||'<div class="empty-state"><i class="ti ti-shield-off"></i>Nenhuma batalha registrada</div>';
+}
+function deleteWar(id){if(confirm('Excluir esta guerra?')){state.wars=state.wars.filter(w=>w.id!==id);saveState();renderWars();toast('Guerra excluída');}}
+function deleteAtk(wid,aid){const w=state.wars.find(x=>x.id===wid);if(w){w.attacks=w.attacks.filter(a=>a.id!==aid);saveState();renderWars();toast('Ataque removido');}}
+
+/* ═════════════════ DONATIONS ═════════════════ */
+function renderDonations(){
+  const seasons=Object.keys(state.donations);
+  let h=`<button class="stab ${state.currentSeason==='geral'?'active':''}" onclick="setSeason('geral')">★ Geral</button>`;
+  seasons.forEach(s=>{h+=`<button class="stab ${state.currentSeason===s?'active':''}" onclick="setSeason('${s}')">${s}</button>`;});
+  document.getElementById('seasonTabs').innerHTML=h;
+  let data;
+  if(state.currentSeason==='geral'){
+    const acc={};
+    seasons.forEach(s=>{(state.donations[s]||[]).forEach(d=>{if(!acc[d.player])acc[d.player]={player:d.player,sent:0,recv:0};acc[d.player].sent+=d.sent;acc[d.player].recv+=d.recv;});});
+    data=Object.values(acc);
+  }else data=state.donations[state.currentSeason]||[];
+  const sorted=[...data].sort((a,b)=>b.sent-a.sent);
+  const tS=data.reduce((a,d)=>a+d.sent,0),tR=data.reduce((a,d)=>a+d.recv,0);
+  const zero=data.filter(d=>d.sent===0).length;
+  document.getElementById('donMetrics').innerHTML=`
+    <div class="metric green"><div class="m-icon"><i class="ti ti-arrow-up-right"></i></div><div class="metric-body"><div class="metric-val">${tS.toLocaleString('pt-BR')}</div><div class="metric-lbl">Enviadas</div></div></div>
+    <div class="metric blue"><div class="m-icon"><i class="ti ti-arrow-down-left"></i></div><div class="metric-body"><div class="metric-val">${tR.toLocaleString('pt-BR')}</div><div class="metric-lbl">Recebidas</div></div></div>
+    <div class="metric red"><div class="m-icon"><i class="ti ti-ban"></i></div><div class="metric-body"><div class="metric-val">${zero}</div><div class="metric-lbl">Sem Doação</div></div></div>
+    <div class="metric orange"><div class="m-icon"><i class="ti ti-chart-bar"></i></div><div class="metric-body"><div class="metric-val">${Math.round(tS/Math.max(data.length,1))}</div><div class="metric-lbl">Média</div></div></div>`;
+  document.getElementById('donList').innerHTML=sorted.length?sorted.map((d,i)=>{
+    const ratio=d.recv>0?(d.sent/d.recv).toFixed(1):'∞';
+    const rc=d.sent>=d.recv?'var(--gtxt)':'var(--rtxt)';
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const member=state.members.find(m=>m.name===d.player);
+    const th=member?member.th:12;
+    const role=member?member.role:'membro';
+    return`<div class="don-row" style="grid-template-columns:26px 44px 1fr 58px 58px 46px 36px;gap:8px;">
+      <span class="don-rank ${medal?'medal':''}">${medal||(i+1)}</span>
+      ${thBadge(th,role,'sm')}
+      <span class="don-name">${d.player}</span>
+      <span class="don-s">+${d.sent}</span>
+      <span class="don-r">${d.recv}</span>
+      <span class="don-ratio" style="color:${rc}">${ratio}</span>
+      ${state.currentSeason!=='geral'?`<button class="icon-btn" onclick="openModal('editDon','${d.player}')"><i class="ti ti-edit"></i></button>`:'<span></span>'}
+    </div>`;
+  }).join(''):'<div class="empty-state"><i class="ti ti-heart-off"></i>Sem dados</div>';
+}
+function setSeason(s){state.currentSeason=s;renderDonations();}
+function closeSeasonConfirm(){
+  if(confirm('Encerrar temporada '+state.currentSeason+' e abrir a próxima?')){
+    const now=new Date(),next=new Date(now.getFullYear(),now.getMonth()+1,1);
+    const nk=mKey(next.getFullYear(),next.getMonth());
+    if(!state.donations[nk])state.donations[nk]=state.members.map(m=>({player:m.name,sent:0,recv:0}));
+    state.currentSeason=nk;saveState();renderDonations();toast('Temporada '+nk+' aberta!');
+  }
+}
+
+/* ═════════════════ CALENDAR ═════════════════ */
+function buildCalendar(){
+  const y=state.calYear,m=state.calMonth;
+  document.getElementById('calMonthTitle').textContent=mLabel(y,m);
+  const today=new Date(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const evs={};
+  function ae(d,cls,lbl){if(!evs[d])evs[d]=[];evs[d].push({cls,lbl});}
+  for(let d=1;d<=dim;d++){
+    if(d<=11)ae(d,'ev-cwl','CWL');
+    const wd=new Date(y,m,d).getDay();
+    if(wd===1||wd===4||wd===0)ae(d,'ev-war','⚔');
+    if(wd===5||wd===6||wd===0)ae(d,'ev-raid','Raid');
+    if(d>=22&&d<=28)ae(d,'ev-games','Games');
+  }
+  const lm=(()=>{const l=new Date(y,m+1,0);while(l.getDay()!==1)l.setDate(l.getDate()-1);return l.getDate();})();
+  ae(lm,'ev-admin','Adm');
+  const ck=`${y}-${m}`;
+  if(state.customEvents&&state.customEvents[ck])Object.keys(state.customEvents[ck]).forEach(d=>{(state.customEvents[ck][d]||[]).forEach(e=>ae(parseInt(d),'ev-custom',e.label.slice(0,6)));});
+  let h='';
+  DAYS_PT.forEach(d=>{h+=`<div class="cal-dh">${d.slice(0,1)}</div>`;});
+  for(let i=0;i<fd;i++)h+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const iT=y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate();
+    const dEvs=(evs[d]||[]).slice(0,3);
+    h+=`<div class="cal-day${iT?' today cal-today':''}" onclick="openDayModal(${d})"><div class="cal-num">${d}</div>${dEvs.map(e=>`<div class="cal-ev ${e.cls}">${e.lbl}</div>`).join('')}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML=h;
+  renderFixed();
+}
+function openDayModal(d){
+  currentDayKey=`${state.calYear}-${state.calMonth}`;
+  if(!state.customEvents)state.customEvents={};
+  const ce=(state.customEvents[currentDayKey]||{})[d]||[];
+  const mc=document.getElementById('modalContent');
+  mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-calendar-plus"></i>${d} de ${MONTHS_PT[state.calMonth]}</div>
+    ${ce.length?`<div style="margin-bottom:1rem;">${ce.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:linear-gradient(180deg,#1a0d05,#0d0703);border:2px solid #6b4514;border-radius:7px;margin-bottom:6px;font-family:'Lilita One',sans-serif;font-size:13px;color:var(--cream);letter-spacing:.03em;text-shadow:0 1px 0 rgba(0,0,0,.6);"><span style="flex:1">${e.label}</span><button class="icon-btn danger" onclick="deleteCEv(${d},'${e.id}')"><i class="ti ti-x"></i></button></div>`).join('')}</div>`:''}
+    <div class="mf"><label>Nova atividade</label><input type="text" id="evLabel" placeholder="Ex: Reunião de líderes"/></div>
+    <div class="modal-actions"><button class="btn-chunky stone sm" onclick="closeModal()">Fechar</button><button class="btn-chunky" onclick="addCEv(${d})">Adicionar</button></div>`;
+  document.getElementById('modal').style.display='flex';
+  setTimeout(()=>document.getElementById('evLabel')&&document.getElementById('evLabel').focus(),100);
+}
+function addCEv(d){
+  const lb=document.getElementById('evLabel').value.trim();if(!lb){closeModal();return;}
+  const k=currentDayKey;
+  if(!state.customEvents[k])state.customEvents[k]={};
+  if(!state.customEvents[k][d])state.customEvents[k][d]=[];
+  state.customEvents[k][d].push({id:'e'+(state.nextId++),label:lb});
+  saveState();closeModal();buildCalendar();toast('Atividade adicionada');
+}
+function deleteCEv(d,id){
+  const k=currentDayKey;
+  if(state.customEvents&&state.customEvents[k]&&state.customEvents[k][d]){
+    state.customEvents[k][d]=state.customEvents[k][d].filter(e=>e.id!==id);
+    saveState();openDayModal(d);buildCalendar();
+  }
+}
+function renderFixed(){
+  document.getElementById('fixedList').innerHTML=(state.fixedTasks||[]).map(t=>`
+    <div class="rule-block">
+      <div class="rule-icon ri-${t.color}"><i class="ti ti-${t.icon}"></i></div>
+      <div class="rule-txt"><strong>${t.title}</strong>${t.text}</div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openModal('editFixed','${t.id}')"><i class="ti ti-edit"></i></button>
+        <button class="icon-btn danger" onclick="deleteFixed('${t.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+function deleteFixed(id){if(confirm('Excluir atividade?')){state.fixedTasks=state.fixedTasks.filter(t=>t.id!==id);saveState();renderFixed();toast('Removido');}}
+function prevMonth(){state.calMonth--;if(state.calMonth<0){state.calMonth=11;state.calYear--;}saveState();buildCalendar();}
+function nextMonth(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++;}saveState();buildCalendar();}
+
+/* ═════════════════ RULES ═════════════════ */
+function renderRules(){
+  document.getElementById('ruleList').innerHTML=(state.rules||[]).map(r=>`
+    <div class="rule-block">
+      <div class="rule-icon ri-${r.color}"><i class="ti ti-${r.icon}"></i></div>
+      <div class="rule-txt"><strong>${r.title}</strong>${r.text}</div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openModal('editRule','${r.id}')"><i class="ti ti-edit"></i></button>
+        <button class="icon-btn danger" onclick="deleteRule('${r.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+function deleteRule(id){if(confirm('Excluir regra?')){state.rules=state.rules.filter(r=>r.id!==id);saveState();renderRules();toast('Regra excluída');}}
+
+/* ═════════════════ MESSAGES + TEMPLATE EDITOR ═════════════════ */
+const VARS=[
+  {key:'clan_nome',desc:'Nome do clã'},{key:'comunidade',desc:'Comunidade'},{key:'modelo_atual',desc:'Modelo ativo'},
+  {key:'temporada',desc:'Temporada'},{key:'total_membros',desc:'Total membros'},{key:'membros_ativos',desc:'Ativos'},
+  {key:'membros_inativos',desc:'Inativos'},{key:'membros_advertidos',desc:'Qtd advertidos'},
+  {key:'advertidos_lista',desc:'Nomes advertidos'},{key:'ultima_guerra_resultado',desc:'Resultado última guerra'},
+  {key:'ultima_guerra_oponente',desc:'Oponente última guerra'},{key:'ultima_guerra_placar',desc:'Placar'},
+  {key:'ultima_guerra_data',desc:'Data última guerra'},{key:'total_guerras_mes',desc:'Guerras no mês'},
+  {key:'guerras_vitorias',desc:'Vitórias'},{key:'guerras_derrotas',desc:'Derrotas'},
+  {key:'top3_doacoes',desc:'Top 3 doadores'},{key:'top5_doacoes',desc:'Top 5 doadores'},
+  {key:'sem_doacoes',desc:'Sem doação'},{key:'total_enviadas',desc:'Total enviadas'},
+  {key:'regra_1atk',desc:'1º ataque'},{key:'regra_2atk',desc:'2º ataque'},
+];
+const DEFAULTS_TPL={
+  chat_aviso:`⚔️ Guerra ativa — {modelo_atual}\n\n• {regra_1atk}\n• {regra_2atk}\n\nEscudo verde obrigatório. Heróis disponíveis. 🛡️`,
+  chat_horario:`🕛 Liberado o 2º ATAQUE!\n\nÚltimas 12h iniciadas.\n{regra_2atk}\n\nPartam pra cima! ⚔️`,
+  wpp_membros:`🏰 *{clan_nome} — Boletim* 🏰\n_{comunidade} · {temporada}_\n\n*Última guerra:* {ultima_guerra_resultado}\n{ultima_guerra_data} · vs {ultima_guerra_oponente}\nPlacar: {ultima_guerra_placar}\n\n*🏅 Top doadores ({temporada}):*\n{top3_doacoes}\n\n*Modelo:* {modelo_atual}\n*Ativos:* {membros_ativos}/{total_membros}\n\n*⚠️ Regras:*\n• {regra_1atk}\n• {regra_2atk}\n\nPra cima! ⚔️🔥`,
+  wpp_adms:`📊 *RELATÓRIO {clan_nome} — {temporada}*\n_{comunidade} · 15 clãs_\n\n*━━ ROSTER ━━*\nTotal: {total_membros} · Ativos: {membros_ativos}\nInativos: {membros_inativos} · Advertidos: {membros_advertidos}\n└ {advertidos_lista}\n\n*━━ GUERRAS ━━*\n{total_guerras_mes} guerras · {guerras_vitorias}V {guerras_derrotas}D\nÚltima: {ultima_guerra_resultado} vs {ultima_guerra_oponente} ({ultima_guerra_placar})\n\n*━━ DOAÇÕES {temporada} ━━*\nTotal: {total_enviadas}\nSem doação: {sem_doacoes}\nTop 5:\n{top5_doacoes}\n\n*━━ MODELO ━━*\n{modelo_atual}\n\n_Painel BB5_`,
+};
+let currentMsgType='chat_aviso';
+
+function getVarData(){
+  const lw=state.wars[0];
+  const s=state.currentSeason==='geral'?Object.keys(state.donations)[0]:state.currentSeason;
+  const data=state.donations[s]||[];
+  const sorted=[...data].sort((a,b)=>b.sent-a.sent);
+  const warned=state.members.filter(m=>m.warns>=1);
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  const wins=state.wars.filter(w=>w.ourS>w.theirS).length;
+  const losses=state.wars.filter(w=>w.ourS<w.theirS).length;
+  const tS=data.reduce((a,d)=>a+d.sent,0);
+  const zeros=data.filter(d=>d.sent===0).map(d=>d.player);
+  return{
+    clan_nome:'Bad Boys 5',comunidade:'Clash Empire',
+    modelo_atual:state.model===1?'Modelo 1 (organizados)':'Modelo 2 (livres)',
+    temporada:s,total_membros:state.members.length,membros_ativos:active,
+    membros_inativos:state.members.filter(m=>m.status==='inativo').length,
+    membros_advertidos:warned.length,
+    advertidos_lista:warned.length?warned.map(m=>`${m.name}(${m.warns})`).join(', '):'nenhum',
+    ultima_guerra_data:lw?lw.date:'—',ultima_guerra_oponente:lw?lw.opp:'—',
+    ultima_guerra_resultado:lw?(lw.ourS>lw.theirS?'🏆 VITÓRIA':lw.ourS<lw.theirS?'❌ Derrota':'🤝 Empate'):'—',
+    ultima_guerra_placar:lw?`${lw.ourS}★ x ${lw.theirS}★`:'—',
+    total_guerras_mes:state.wars.length,guerras_vitorias:wins,guerras_derrotas:losses,
+    top3_doacoes:sorted.slice(0,3).map((d,i)=>`${'🥇🥈🥉'[i]||''}${d.player} — ${d.sent.toLocaleString('pt-BR')}`).join('\n')||'—',
+    top5_doacoes:sorted.slice(0,5).map((d,i)=>`${i+1}. ${d.player} — ${d.sent.toLocaleString('pt-BR')}`).join('\n')||'—',
+    sem_doacoes:zeros.length?zeros.join(', '):'nenhum',
+    total_enviadas:tS.toLocaleString('pt-BR'),
+    regra_1atk:'1º atk: ESPELHO obrigatório',
+    regra_2atk:'2º atk: somente nas últimas 12h',
+  };
+}
+function resolveTPL(tpl){
+  const d=getVarData();
+  return tpl.replace(/\{(\w+)\}/g,(_,k)=>d[k]!==undefined?d[k]:`{${k}}`);
+}
+function buildVarGrid(){
+  document.getElementById('varGrid').innerHTML=VARS.map(v=>
+    `<div class="var-chip" onclick="insertVar('{${v.key}}')" title="${v.desc}"><span class="var-key">{${v.key}}</span></div>`
+  ).join('');
+}
+function insertVar(v){
+  const ta=document.getElementById('tplArea');
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  ta.value=ta.value.slice(0,s)+v+ta.value.slice(e);
+  ta.selectionStart=ta.selectionEnd=s+v.length;
+  ta.focus();
+  if(!state.templates)state.templates={};
+  state.templates[currentMsgType]=ta.value;
+  updatePreview();
+}
+function selMsgType(type,el){
+  currentMsgType=type;
+  document.querySelectorAll('.msg-card').forEach(c=>c.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  if(!state.templates)state.templates={};
+  const tpl=state.templates[type]||DEFAULTS_TPL[type];
+  document.getElementById('tplArea').value=tpl;
+  updatePreview();
+}
+function onTplEdit(){
+  if(!state.templates)state.templates={};
+  state.templates[currentMsgType]=document.getElementById('tplArea').value;
+  saveState();updatePreview();
+}
+function updatePreview(){
+  const tpl=document.getElementById('tplArea').value;
+  document.getElementById('msgPreview').textContent=resolveTPL(tpl);
+}
+function resetTpl(){
+  if(confirm('Restaurar template padrão?')){
+    if(!state.templates)state.templates={};
+    delete state.templates[currentMsgType];
+    document.getElementById('tplArea').value=DEFAULTS_TPL[currentMsgType];
+    saveState();updatePreview();toast('Template restaurado');
+  }
+}
+function getMsg(){return resolveTPL(document.getElementById('tplArea').value);}
+function copyMsg(){
+  navigator.clipboard.writeText(getMsg()).then(()=>{
+    const b=document.getElementById('copyMsgBtn');
+    b.innerHTML='<i class="ti ti-check"></i>Copiado!';
+    setTimeout(()=>{b.innerHTML='<i class="ti ti-brand-whatsapp"></i>Copiar';},2000);
+    toast('Mensagem copiada!');
+  });
+}
+function openWA(){window.open(`https://wa.me/?text=${encodeURIComponent(getMsg())}`,'_blank');}
+
+/* ═════════════════ MODAL ═════════════════ */
+const ICON_OPTS=['shield-half','swords','clock','users','alert-triangle','skull','trophy','refresh','star','calendar-week','shield','heart','crown','bolt'];
+const COLOR_OPTS=[['gold','Dourado'],['info','Azul'],['warn','Laranja'],['danger','Vermelho']];
+
+function openModal(type,id){
+  modalType=type;currentRecordId=id;
+  const mc=document.getElementById('modalContent');
+
+  if(type==='addMember'||type==='editMember'){
+    const m=type==='editMember'?state.members.find(x=>x.id===id):{name:'',th:12,role:'membro',status:'ativo',joined:''};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-${type==='editMember'?'edit':'user-plus'}"></i>${type==='editMember'?'Editar':'Adicionar'} membro</div>
+      <div class="mf"><label>Nome no jogo</label><input type="text" id="mName" value="${m.name||''}" placeholder="Ex: DragonSlayer99"/></div>
+      <div class="mf"><label>Town Hall (1–17)</label><input type="number" id="mTh" min="1" max="17" value="${m.th||12}"/></div>
+      <div class="mf"><label>Cargo</label><select id="mRole">
+        <option value="membro" ${m.role==='membro'?'selected':''}>Membro</option>
+        <option value="veterano" ${m.role==='veterano'?'selected':''}>Veterano</option>
+        <option value="co-lider" ${m.role==='co-lider'?'selected':''}>Co-líder</option>
+        <option value="lider" ${m.role==='lider'?'selected':''}>Líder</option>
+      </select></div>
+      <div class="mf"><label>Status</label><select id="mStatus">
+        <option value="ativo" ${m.status==='ativo'?'selected':''}>Ativo (escudo verde)</option>
+        <option value="inativo" ${m.status==='inativo'?'selected':''}>Inativo</option>
+      </select></div>
+      <div class="mf"><label>Mês de ingresso</label><input type="text" id="mJoined" value="${m.joined||''}" placeholder="mai/26"/></div>
+      <div class="modal-actions">${type==='editMember'?`<button class="btn-chunky red sm left" onclick="deleteMember(${id})">Remover</button>`:''}
+        <button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button>
+        <button class="btn-chunky" onclick="saveMember(${type==='editMember'?id:'null'})">${type==='editMember'?'Salvar':'Adicionar'}</button>
+      </div>`;
+  }else if(type==='addWar'||type==='editWar'){
+    const w=type==='editWar'?state.wars.find(x=>x.id===id):{opp:'',size:20,ourS:0,theirS:0,date:''};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-swords"></i>${type==='editWar'?'Editar':'Registrar'} guerra</div>
+      <div class="mf"><label>Data (dd/mm/aaaa)</label><input type="text" id="wDate" value="${w.date||''}"/></div>
+      <div class="mf"><label>Clã oponente</label><input type="text" id="wOpp" value="${w.opp||''}"/></div>
+      <div class="mf"><label>Tamanho</label><input type="number" id="wSize" value="${w.size}" min="5" max="50"/></div>
+      <div class="mf"><label>Nossas estrelas</label><input type="number" id="wOur" value="${w.ourS}" min="0"/></div>
+      <div class="mf"><label>Estrelas deles</label><input type="number" id="wTheir" value="${w.theirS}" min="0"/></div>
+      <div class="modal-actions"><button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button><button class="btn-chunky" onclick="saveWar(${type==='editWar'?id:'null'})">Salvar</button></div>`;
+  }else if(type==='addAtk'){
+    const opts=state.members.map(m=>`<option value="${m.name}">${m.name}</option>`).join('');
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-swords"></i>Registrar ataque</div>
+      <div class="mf"><label>Jogador</label><select id="aPlayer">${opts}</select></div>
+      <div class="mf"><label>Base alvo</label><input type="text" id="aTarget" value="#"/></div>
+      <div class="mf"><label>Estrelas</label><input type="number" id="aStars" value="3" min="0" max="3"/></div>
+      <div class="mf"><label>Tipo</label><select id="aMode"><option value="espelho">Espelho (1º atk)</option><option value="livre">Livre (2º atk)</option></select></div>
+      <div class="modal-actions"><button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button><button class="btn-chunky" onclick="saveAtk()">Salvar</button></div>`;
+  }else if(type==='addDon'||type==='editDon'){
+    let player=id||'';let d={sent:0,recv:0};
+    if(type==='editDon'){const arr=state.donations[state.currentSeason]||[];d=arr.find(x=>x.player===id)||d;}
+    const opts=state.members.map(m=>`<option value="${m.name}" ${player===m.name?'selected':''}>${m.name}</option>`).join('');
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-gift"></i>${type==='editDon'?'Editar':'Atualizar'} doações — ${state.currentSeason}</div>
+      <div class="mf"><label>Jogador</label><select id="dPlayer" ${type==='editDon'?'disabled':''}>${opts}</select></div>
+      <div class="mf"><label>Total enviadas</label><input type="number" id="dSent" value="${d.sent}" min="0"/></div>
+      <div class="mf"><label>Total recebidas</label><input type="number" id="dRecv" value="${d.recv}" min="0"/></div>
+      <div class="modal-actions">${type==='editDon'?`<button class="btn-chunky red sm left" onclick="deleteDon('${id}')">Remover</button>`:''}
+        <button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button><button class="btn-chunky" onclick="saveDon()">Salvar</button></div>`;
+  }else if(type==='addRule'||type==='editRule'){
+    const r=type==='editRule'?state.rules.find(x=>x.id===id):{title:'',text:'',icon:'shield',color:'gold'};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-book-2"></i>${type==='editRule'?'Editar':'Nova'} regra</div>
+      <div class="mf"><label>Título</label><input type="text" id="rTitle" value="${r.title||''}"/></div>
+      <div class="mf"><label>Descrição</label><textarea id="rText">${r.text||''}</textarea></div>
+      <div class="mf"><label>Ícone</label><select id="rIcon">${ICON_OPTS.map(i=>`<option value="${i}" ${r.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+      <div class="mf"><label>Cor</label><select id="rColor">${COLOR_OPTS.map(([v,l])=>`<option value="${v}" ${r.color===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="modal-actions"><button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button><button class="btn-chunky" onclick="saveRule('${type==='editRule'?id:''}')">Salvar</button></div>`;
+  }else if(type==='addFixed'||type==='editFixed'){
+    const t=type==='editFixed'?state.fixedTasks.find(x=>x.id===id):{title:'',text:'',icon:'calendar-week',color:'gold'};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-list-details"></i>${type==='editFixed'?'Editar':'Nova'} atividade</div>
+      <div class="mf"><label>Título</label><input type="text" id="fTitle" value="${t.title||''}"/></div>
+      <div class="mf"><label>Descrição</label><textarea id="fText">${t.text||''}</textarea></div>
+      <div class="mf"><label>Ícone</label><select id="fIcon">${ICON_OPTS.map(i=>`<option value="${i}" ${t.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+      <div class="mf"><label>Cor</label><select id="fColor">${COLOR_OPTS.map(([v,l])=>`<option value="${v}" ${t.color===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="modal-actions"><button class="btn-chunky stone sm" onclick="closeModal()">Cancelar</button><button class="btn-chunky" onclick="saveFixed('${type==='editFixed'?id:''}')">Salvar</button></div>`;
+  }
+  document.getElementById('modal').style.display='flex';
+  setTimeout(()=>{const fi=document.querySelector('#modalContent input');if(fi)fi.focus();},150);
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ─── SAVE ─── */
+function saveMember(id){
+  const name=document.getElementById('mName').value.trim();
+  const th=parseInt(document.getElementById('mTh').value)||12;
+  const role=document.getElementById('mRole').value;
+  const status=document.getElementById('mStatus').value;
+  const joined=document.getElementById('mJoined').value.trim();
+  if(!name)return;
+  if(id&&id!=='null'){const m=state.members.find(x=>x.id===id);if(m){m.name=name;m.th=th;m.role=role;m.status=status;m.joined=joined;}}
+  else{state.members.push({id:state.nextId++,name,role,status,warns:0,th,joined});if(state.donations[state.currentSeason])state.donations[state.currentSeason].push({player:name,sent:0,recv:0});}
+  saveState();closeModal();renderMembers(state.currentFilter);updateTopbar();toast(id&&id!=='null'?'Membro atualizado':'Membro adicionado!');
+}
+function deleteMember(id){
+  const m=state.members.find(x=>x.id===id);
+  if(confirm('Remover '+m.name+'?')){state.members=state.members.filter(x=>x.id!==id);saveState();closeModal();renderMembers(state.currentFilter);updateTopbar();toast(m.name+' removido');}
+}
+function saveWar(id){
+  const opp=document.getElementById('wOpp').value.trim();
+  const size=parseInt(document.getElementById('wSize').value)||20;
+  const ourS=parseInt(document.getElementById('wOur').value)||0;
+  const theirS=parseInt(document.getElementById('wTheir').value)||0;
+  const date=document.getElementById('wDate').value.trim();
+  if(!opp||!date)return;
+  if(id&&id!=='null'){const w=state.wars.find(x=>x.id===id);if(w){w.opp=opp;w.size=size;w.ourS=ourS;w.theirS=theirS;w.date=date;}}
+  else state.wars.unshift({id:state.nextId++,date,opp,ourS,theirS,size,attacks:[]});
+  saveState();closeModal();renderWars();toast('Guerra salva!');
+}
+function saveAtk(){
+  const p=document.getElementById('aPlayer').value;
+  const t=document.getElementById('aTarget').value.trim();
+  const stars=parseInt(document.getElementById('aStars').value)||0;
+  const mode=document.getElementById('aMode').value;
+  const war=state.wars.find(w=>w.id===currentRecordId);
+  if(war&&t)war.attacks.push({id:'a'+(state.nextId++),p,t,stars,mode});
+  saveState();closeModal();renderWars();toast('Ataque registrado!');
+}
+function saveDon(){
+  const player=document.getElementById('dPlayer').value;
+  const sent=parseInt(document.getElementById('dSent').value)||0;
+  const recv=parseInt(document.getElementById('dRecv').value)||0;
+  if(!state.donations[state.currentSeason])state.donations[state.currentSeason]=[];
+  let d=state.donations[state.currentSeason].find(x=>x.player===player);
+  if(d){d.sent=sent;d.recv=recv;}else state.donations[state.currentSeason].push({player,sent,recv});
+  saveState();closeModal();renderDonations();toast('Doações atualizadas!');
+}
+function deleteDon(player){if(confirm('Remover '+player+'?')){state.donations[state.currentSeason]=state.donations[state.currentSeason].filter(x=>x.player!==player);saveState();closeModal();renderDonations();toast('Removido');}}
+function saveRule(id){
+  const title=document.getElementById('rTitle').value.trim();
+  const text=document.getElementById('rText').value.trim();
+  const icon=document.getElementById('rIcon').value;
+  const color=document.getElementById('rColor').value;
+  if(!title)return;
+  if(id){const r=state.rules.find(x=>x.id===id);if(r){r.title=title;r.text=text;r.icon=icon;r.color=color;}}
+  else state.rules.push({id:'r'+(state.nextId++),title,text,icon,color});
+  saveState();closeModal();renderRules();toast('Regra salva!');
+}
+function saveFixed(id){
+  const title=document.getElementById('fTitle').value.trim();
+  const text=document.getElementById('fText').value.trim();
+  const icon=document.getElementById('fIcon').value;
+  const color=document.getElementById('fColor').value;
+  if(!title)return;
+  if(id){const t=state.fixedTasks.find(x=>x.id===id);if(t){t.title=title;t.text=text;t.icon=icon;t.color=color;}}
+  else state.fixedTasks.push({id:'f'+(state.nextId++),title,text,icon,color});
+  saveState();closeModal();renderFixed();toast('Atividade salva!');
+}
+</script>
+</body>
+</html>
