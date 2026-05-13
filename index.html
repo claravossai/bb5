@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Bad Boys 5 — Clash Empire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+/* ── RESET & BASE ───────────────────────────────────────────── */
+:root {
+  --gold:#c8922a; --gold-l:#f0c060; --gold-d:#8a6010;
+  --bg:#111008; --bg2:#1a1508; --bg3:#221e0e; --bg4:#2a2410;
+  --border:rgba(200,146,42,.15); --border2:rgba(200,146,42,.28);
+  --text:#f0ead8; --text2:#a89d7a; --text3:#6b6040;
+  --green:#1d9e75; --gbg:rgba(29,158,117,.13); --gtxt:#4dd4a0;
+  --red:#e24b4a;   --rbg:rgba(226,75,74,.13);  --rtxt:#f08080;
+  --yel:#d4900a;   --ybg:rgba(212,144,10,.13); --ytxt:#f0b84a;
+  --blue:#378add;  --bbg:rgba(55,138,221,.13); --btxt:#7ab8f0;
+  --r:10px; --rsm:6px; --rlg:14px;
+  --tab-h:52px; /* bottom nav height on mobile */
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;overscroll-behavior:none;}
+body{background:radial-gradient(ellipse 700px 350px at 15% 0%,rgba(200,146,42,.06) 0%,transparent 65%),radial-gradient(ellipse 500px 500px at 85% 100%,rgba(200,146,42,.04) 0%,transparent 65%),var(--bg);}
+input,select,textarea,button{font-family:inherit;font-size:inherit;}
+button{cursor:pointer;}
+
+/* ── LOGIN SCREEN ───────────────────────────────────────────── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1.5rem;}
+.login-box{width:100%;max-width:360px;text-align:center;}
+.login-emblem{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#2a1800,#1a0e00);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:0 0 32px rgba(200,146,42,.25);}
+.login-emblem i{font-size:34px;color:var(--gold-l);}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--text);letter-spacing:.5px;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:2rem;}
+.login-field{position:relative;margin-bottom:12px;}
+.login-field input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:13px 16px 13px 44px;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
+.login-field input:focus{border-color:var(--gold);}
+.login-field .fi{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text3);}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-d));border:none;border-radius:var(--r);color:#fff;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;margin-top:4px;transition:opacity .15s;}
+.login-btn:hover{opacity:.9;}
+.login-btn:active{transform:scale(.98);}
+.login-err{font-size:12px;color:var(--rtxt);margin-top:8px;min-height:18px;}
+.login-version{font-size:10px;color:var(--text3);margin-top:1.5rem;}
+
+/* ── APP SHELL ──────────────────────────────────────────────── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:column;}
+#app.ready{display:flex;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:56px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;}
+.topbar-brand{display:flex;align-items:center;gap:9px;min-width:0;}
+.topbar-icon{width:34px;height:34px;border-radius:50%;background:#1a0e00;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.topbar-icon i{font-size:17px;color:var(--gold-l);}
+.topbar-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-sub{font-size:10px;color:var(--text3);white-space:nowrap;}
+.topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.model-pill{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid;font-family:'Rajdhani',sans-serif;letter-spacing:.3px;white-space:nowrap;}
+.m1{border-color:var(--green);color:var(--gtxt);background:var(--gbg);}
+.m2{border-color:var(--red);color:var(--rtxt);background:var(--rbg);}
+.logout-btn{background:none;border:none;padding:6px;color:var(--text3);}
+.logout-btn i{font-size:18px;}
+
+/* SCROLL AREA */
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.scroll-inner{padding:1rem;padding-bottom:calc(var(--tab-h) + 1rem);max-width:720px;margin:0 auto;}
+
+/* TAB NAV */
+.tab-nav{display:flex;background:var(--bg2);border-top:1px solid var(--border);height:var(--tab-h);flex-shrink:0;}
+.tn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--text3);font-size:9px;font-weight:500;padding:4px 2px;transition:color .15s;font-family:'Inter',sans-serif;letter-spacing:.2px;}
+.tn-btn i{font-size:20px;transition:color .15s;}
+.tn-btn.active{color:var(--gold-l);}
+.tn-btn.active i{color:var(--gold);}
+
+/* DESKTOP TABS (shown only on wide screens) */
+.desktop-tabs{display:none;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.desktop-tabs .tabs-inner{display:flex;max-width:720px;margin:0 auto;padding:0 1rem;}
+.dt-btn{padding:10px 14px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:color .15s;}
+.dt-btn:hover{color:var(--text2);}
+.dt-btn.active{color:var(--gold-l);border-bottom-color:var(--gold);font-weight:600;}
+.dt-btn i{font-size:14px;}
+
+/* SECTIONS */
+.section{display:none;}.section.active{display:block;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1rem;}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;}
+.metric-val{font-size:26px;font-weight:700;font-family:'Rajdhani',sans-serif;color:var(--text);}
+.metric-lbl{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);padding:1rem;margin-bottom:1rem;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap;}
+.card-title{font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px;font-family:'Rajdhani',sans-serif;letter-spacing:.3px;}
+.card-title i{font-size:15px;color:var(--gold);}
+
+/* MEMBER ROW */
+.player-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);}
+.player-row:last-child{border-bottom:none;}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;font-family:'Rajdhani',sans-serif;border:1px solid var(--border);}
+.avatar.ldr{background:linear-gradient(135deg,#2a1800,#1a0e00);color:var(--gold-l);border-color:var(--gold);}
+.avatar.co{background:rgba(55,138,221,.12);color:var(--btxt);border-color:rgba(55,138,221,.3);}
+.player-info{flex:1;min-width:0;}
+.player-name{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Rajdhani',sans-serif;}
+.player-meta{font-size:10px;color:var(--text3);}
+.player-meta .adv{color:var(--rtxt);font-weight:600;}
+.badges{display:flex;gap:4px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+.badge{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:600;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;font-family:'Rajdhani',sans-serif;}
+.bg{background:var(--gbg);color:var(--gtxt);border:1px solid rgba(29,158,117,.2);}
+.br{background:var(--rbg);color:var(--rtxt);border:1px solid rgba(226,75,74,.2);}
+.bw{background:var(--ybg);color:var(--ytxt);border:1px solid rgba(212,144,10,.2);}
+.bb{background:var(--bbg);color:var(--btxt);border:1px solid rgba(55,138,221,.2);}
+.bgold{background:rgba(200,146,42,.12);color:var(--gold-l);border:1px solid rgba(200,146,42,.3);}
+.bmem{background:rgba(107,96,64,.15);color:var(--text3);border:1px solid var(--border);}
+
+/* WARN CONTROLS */
+.row-actions{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.warn-stack{display:flex;flex-direction:column;gap:2px;}
+.wmini{background:var(--bg3);border:1px solid var(--border);cursor:pointer;padding:0;width:22px;height:15px;display:flex;align-items:center;justify-content:center;color:var(--text3);border-radius:4px;transition:all .15s;}
+.wmini.up:hover{color:var(--ytxt);border-color:rgba(212,144,10,.4);}
+.wmini.down:hover{color:var(--gtxt);border-color:rgba(29,158,117,.4);}
+.wmini i{font-size:10px;}
+.icon-btn{background:none;border:none;padding:6px;color:var(--text3);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.icon-btn:hover{background:var(--bg3);color:var(--text);}
+.icon-btn.danger:hover{color:var(--rtxt);}
+.icon-btn i{font-size:15px;}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.fc{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text3);white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:'Rajdhani',sans-serif;}
+.fc.active{background:var(--bg4);color:var(--gold-l);border-color:rgba(200,146,42,.4);}
+
+/* ADD BTN */
+.add-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rsm);border:1px solid var(--border);background:none;cursor:pointer;font-size:12px;color:var(--text3);transition:all .15s;}
+.add-btn:hover{background:var(--bg3);color:var(--text);border-color:var(--border2);}
+.add-btn i{font-size:13px;}
+
+/* WAR CARD */
+.war-card{border:1px solid var(--border);border-radius:var(--r);padding:.875rem;margin-bottom:8px;background:var(--bg3);}
+.war-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px;}
+.team-c{text-align:center;}
+.team-n{font-size:10px;color:var(--text3);}
+.team-s{font-size:20px;font-weight:700;font-family:'Rajdhani',sans-serif;}
+.pbar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.pfill{height:100%;border-radius:2px;}
+.rbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'Rajdhani',sans-serif;letter-spacing:.5px;}
+.win{background:var(--gbg);color:var(--gtxt);border:1px solid rgba(29,158,117,.2);}
+.loss{background:var(--rbg);color:var(--rtxt);border:1px solid rgba(226,75,74,.2);}
+.draw{background:var(--ybg);color:var(--ytxt);border:1px solid rgba(212,144,10,.2);}
+.atk-row{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;color:var(--text2);}
+.atk-p{font-weight:600;color:var(--text);min-width:80px;font-family:'Rajdhani',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stars span{color:var(--gold-l);font-size:12px;}.stars .off{color:var(--text3);}
+
+/* DONATIONS */
+.don-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.don-row:last-child{border-bottom:none;}
+.don-rank{font-size:11px;color:var(--text3);min-width:20px;font-family:'Rajdhani',sans-serif;}
+.don-name{flex:1;font-weight:600;color:var(--text);font-family:'Rajdhani',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.don-s{min-width:48px;text-align:right;color:var(--gtxt);}
+.don-r{min-width:48px;text-align:right;color:var(--btxt);}
+.don-ratio{min-width:38px;text-align:right;font-weight:700;font-family:'Rajdhani',sans-serif;}
+.col-hdr{display:grid;grid-template-columns:20px 26px 1fr 48px 48px 38px 26px;gap:6px;padding:5px 0;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px;}
+
+/* SEASON TABS */
+.season-tabs{display:flex;gap:5px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.season-tabs::-webkit-scrollbar{display:none;}
+.stab{padding:5px 10px;border-radius:var(--rsm);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text3);white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:'Rajdhani',sans-serif;}
+.stab.active{background:rgba(200,146,42,.12);color:var(--gold-l);border-color:rgba(200,146,42,.35);}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:1rem;}
+.cal-dh{font-size:9px;color:var(--text3);text-align:center;padding:3px 0;font-weight:600;font-family:'Rajdhani',sans-serif;letter-spacing:.4px;}
+.cal-day{border-radius:var(--rsm);padding:3px 2px;min-height:52px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:border-color .15s;}
+.cal-day:hover{border-color:var(--border2);}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default;}
+.cal-day.today{border-color:var(--gold);border-width:1.5px;}
+.cal-num{font-size:9px;color:var(--text3);margin-bottom:2px;text-align:right;padding-right:2px;font-family:'Rajdhani',sans-serif;}
+.cal-today .cal-num{color:var(--gold-l);font-weight:700;}
+.cal-ev{font-size:8px;padding:1px 2px;border-radius:2px;margin-bottom:1px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.ev-war{background:rgba(29,158,117,.15);color:#4dd4a0;}
+.ev-raid{background:rgba(55,138,221,.15);color:#7ab8f0;}
+.ev-cwl{background:rgba(200,146,42,.15);color:var(--gold-l);}
+.ev-games{background:rgba(212,144,10,.15);color:var(--ytxt);}
+.ev-admin{background:rgba(107,96,64,.25);color:var(--text2);}
+.ev-custom{background:rgba(212,83,126,.15);color:#f0a0c0;}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem;}
+.leg-i{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--text3);}
+.leg-d{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+
+/* RULES */
+.rule-block{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.rule-block:last-child{border-bottom:none;}
+.rule-icon{width:30px;height:30px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ri-gold{background:rgba(200,146,42,.12);border:1px solid rgba(200,146,42,.2);}.ri-gold i{color:var(--gold-l);}
+.ri-warn{background:var(--ybg);border:1px solid rgba(212,144,10,.2);}.ri-warn i{color:var(--ytxt);}
+.ri-danger{background:var(--rbg);border:1px solid rgba(226,75,74,.2);}.ri-danger i{color:var(--rtxt);}
+.ri-info{background:var(--bbg);border:1px solid rgba(55,138,221,.2);}.ri-info i{color:var(--btxt);}
+.rule-icon i{font-size:14px;}
+.rule-txt{font-size:12px;color:var(--text2);line-height:1.5;flex:1;}
+.rule-txt strong{color:var(--text);font-weight:600;}
+
+/* MESSAGES */
+.msg-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+.msg-card{border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;background:var(--bg3);transition:all .15s;}
+.msg-card:hover,.msg-card.sel{border-color:var(--gold);background:var(--bg4);}
+.msg-card-title{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;margin-bottom:3px;color:var(--text);font-family:'Rajdhani',sans-serif;}
+.msg-card-title i{color:var(--gold);}
+.msg-card-desc{font-size:10px;color:var(--text3);line-height:1.4;}
+.msg-preview{background:#0d1117;color:#c9d1d9;border-radius:var(--r);padding:12px;font-size:12px;line-height:1.6;font-family:'Courier New',monospace;white-space:pre-wrap;margin-bottom:10px;border:1px solid rgba(255,255,255,.06);max-height:300px;overflow-y:auto;}
+.copy-btn{padding:10px 16px;border-radius:var(--rsm);background:#25d366;color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:'Rajdhani',sans-serif;}
+.copy-btn.copied{background:var(--green);}
+.send-wa{padding:10px 14px;border-radius:var(--rsm);background:none;color:var(--text3);border:1px solid var(--border);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
+.send-wa:hover{background:var(--bg3);color:var(--text);}
+
+/* TEMPLATE EDITOR */
+.tpl-area{width:100%;min-height:180px;padding:10px;font-family:'Courier New',monospace;font-size:12px;line-height:1.6;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);resize:vertical;outline:none;transition:border-color .15s;}
+.tpl-area:focus{border-color:var(--gold);}
+.var-grid{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.var-chip{display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:var(--rsm);background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:all .15s;}
+.var-chip:hover{border-color:var(--gold);}
+.var-key{font-family:'Courier New',monospace;font-size:10px;font-weight:600;color:var(--gold);}
+.var-desc{font-size:10px;color:var(--text3);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:500;padding:0;backdrop-filter:blur(3px);}
+.modal{background:var(--bg2);border-radius:var(--rlg) var(--rlg) 0 0;border:1px solid var(--border2);border-bottom:none;padding:1.25rem;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;}
+.modal-handle{width:36px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 1rem;}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;color:var(--text);font-family:'Rajdhani',sans-serif;letter-spacing:.3px;}
+.modal-title i{color:var(--gold);}
+.mf{margin-bottom:10px;}
+.mf label{font-size:10px;color:var(--text3);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.mf input,.mf select,.mf textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:var(--rsm);padding:10px 12px;font-size:13px;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--gold);}
+.mf textarea{min-height:60px;resize:vertical;font-family:'Inter',sans-serif;}
+.mf select option{background:var(--bg);}
+.modal-actions{display:flex;gap:8px;justify-content:space-between;margin-top:1.25rem;align-items:center;}
+.modal-actions button{padding:10px 16px;border-radius:var(--rsm);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);transition:all .15s;font-family:'Rajdhani',sans-serif;}
+.modal-actions .primary{background:linear-gradient(135deg,var(--gold),var(--gold-d));border-color:var(--gold);color:#fff;}
+.modal-actions .danger-btn{color:var(--rtxt);border-color:rgba(226,75,74,.3);}
+.modal-actions .left{margin-right:auto;}
+
+/* MISC */
+.empty-state{text-align:center;padding:2rem;color:var(--text3);font-size:12px;}
+.empty-state i{font-size:28px;display:block;margin-bottom:8px;}
+.reset-note{font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:8px 10px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.reset-note i{font-size:13px;color:var(--gold);flex-shrink:0;}
+.toast{position:fixed;bottom:calc(var(--tab-h) + 8px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:8px 16px;font-size:12px;color:var(--text);z-index:600;display:flex;align-items:center;gap:7px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transition:all .25s;white-space:nowrap;font-family:'Rajdhani',sans-serif;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast i{color:var(--gold);}
+.sync-indicator{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px;}
+.sync-indicator.syncing{color:var(--ytxt);}
+.sync-indicator.ok{color:var(--gtxt);}
+.sync-indicator.err{color:var(--rtxt);}
+
+/* RESPONSIVE — DESKTOP (≥640px) */
+@media(min-width:640px){
+  .tab-nav{display:none;}
+  .desktop-tabs{display:block;}
+  .scroll-inner{padding-bottom:1rem;}
+  .metrics{grid-template-columns:repeat(4,1fr);}
+  .modal-overlay{align-items:center;}
+  .modal{border-radius:var(--rlg);border:1px solid var(--border2);}
+  .modal-handle{display:none;}
+  .toast{bottom:1.5rem;}
+  .msg-options{grid-template-columns:repeat(4,1fr);}
+}
+@media(min-width:640px) and (min-height:500px){
+  .topbar{height:60px;}
+  .topbar-name{font-size:18px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ──────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-emblem"><i class="ti ti-shield-half"></i></div>
+    <div class="login-title">Bad Boys 5</div>
+    <div class="login-sub">Clash Empire · Painel de Gestão</div>
+    <div class="login-field">
+      <i class="ti ti-lock fi"></i>
+      <input type="password" id="pwd-input" placeholder="Senha de acesso" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-version">v1.0 · claravossai.github.io/bb5</div>
+  </div>
+</div>
+
+<!-- ── APP ────────────────────────────────────────────────────── -->
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-icon"><i class="ti ti-shield-half"></i></div>
+      <div>
+        <div class="topbar-name">Bad Boys 5 <span style="font-size:11px;color:var(--text3);font-weight:400;font-family:'Inter',sans-serif;">· Clash Empire</span></div>
+        <div class="topbar-sub" id="topbar-sub">carregando...</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="model-pill m1" id="modelPill" onclick="toggleModel()">
+        <i class="ti ti-sword"></i><span id="modelTxt">M1</span>
+      </div>
+      <div class="sync-indicator" id="syncInd"><i class="ti ti-cloud"></i><span id="syncTxt">sync</span></div>
+      <button class="logout-btn" onclick="doLogout()" title="Sair"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+
+  <!-- DESKTOP TABS -->
+  <div class="desktop-tabs">
+    <div class="tabs-inner">
+      <button class="dt-btn active" onclick="showTab('membros')"><i class="ti ti-users"></i>Membros</button>
+      <button class="dt-btn" onclick="showTab('guerras')"><i class="ti ti-shield"></i>Guerras</button>
+      <button class="dt-btn" onclick="showTab('doacoes')"><i class="ti ti-heart"></i>Doações</button>
+      <button class="dt-btn" onclick="showTab('calendario')"><i class="ti ti-calendar"></i>Calendário</button>
+      <button class="dt-btn" onclick="showTab('regras')"><i class="ti ti-book"></i>Regras</button>
+      <button class="dt-btn" onclick="showTab('mensagens')"><i class="ti ti-message"></i>Mensagens</button>
+    </div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+    <div class="scroll-inner">
+
+      <!-- MEMBROS -->
+      <div id="membros" class="section active">
+        <div class="metrics" id="memMetrics"></div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-users"></i>Roster</div>
+            <button class="add-btn" onclick="openModal('addMember')"><i class="ti ti-plus"></i>Adicionar</button>
+          </div>
+          <div class="filter-bar">
+            <button class="fc active" onclick="filterM('todos',this)">Todos</button>
+            <button class="fc" onclick="filterM('lideranca',this)">Liderança</button>
+            <button class="fc" onclick="filterM('ativo',this)">Escudo verde</button>
+            <button class="fc" onclick="filterM('advertido',this)">Advertidos</button>
+          </div>
+          <div id="memberList"></div>
+        </div>
+      </div>
+
+      <!-- GUERRAS -->
+      <div id="guerras" class="section">
+        <div class="metrics" id="warMetrics"></div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-sword"></i>Histórico</div>
+            <button class="add-btn" onclick="openModal('addWar')"><i class="ti ti-plus"></i>Registrar</button>
+          </div>
+          <div id="warList"></div>
+        </div>
+      </div>
+
+      <!-- DOAÇÕES -->
+      <div id="doacoes" class="section">
+        <div class="reset-note"><i class="ti ti-refresh"></i>Reset mensal: última segunda do mês. Atualize com os totais do jogo.</div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-heart"></i>Doações</div>
+            <button class="add-btn" onclick="openModal('addDon')"><i class="ti ti-plus"></i>Atualizar</button>
+          </div>
+          <div class="season-tabs" id="seasonTabs"></div>
+          <div class="metrics" id="donMetrics"></div>
+          <div class="col-hdr" style="grid-template-columns:20px 28px 1fr 48px 48px 38px 26px;">
+            <span></span><span></span><span>jogador</span><span style="text-align:right">env.</span><span style="text-align:right">rec.</span><span style="text-align:right">razão</span><span></span>
+          </div>
+          <div id="donList"></div>
+          <button class="add-btn" style="margin-top:12px;" onclick="closeSeasonConfirm()"><i class="ti ti-archive"></i>Encerrar temporada</button>
+        </div>
+      </div>
+
+      <!-- CALENDÁRIO -->
+      <div id="calendario" class="section">
+        <div class="legend">
+          <div class="leg-i"><div class="leg-d" style="background:#4dd4a0;"></div>Guerra</div>
+          <div class="leg-i"><div class="leg-d" style="background:#7ab8f0;"></div>Raid</div>
+          <div class="leg-i"><div class="leg-d" style="background:var(--gold-l);"></div>CWL</div>
+          <div class="leg-i"><div class="leg-d" style="background:var(--ytxt);"></div>Clan Games</div>
+          <div class="leg-i"><div class="leg-d" style="background:var(--text3);"></div>Adm</div>
+          <div class="leg-i"><div class="leg-d" style="background:#f0a0c0;"></div>Custom</div>
+        </div>
+        <div class="card" style="padding:1rem;">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-calendar"></i><span id="calMonthTitle"></span></div>
+            <div style="display:flex;gap:4px;">
+              <button class="add-btn" onclick="prevMonth()" style="padding:5px 10px;"><i class="ti ti-chevron-left"></i></button>
+              <button class="add-btn" onclick="nextMonth()" style="padding:5px 10px;"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">Toque em um dia para adicionar atividade</div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-list"></i>Atividades fixas</div>
+            <button class="add-btn" onclick="openModal('addFixed')"><i class="ti ti-plus"></i>Nova</button>
+          </div>
+          <div id="fixedList"></div>
+        </div>
+      </div>
+
+      <!-- REGRAS -->
+      <div id="regras" class="section">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><i class="ti ti-book"></i>Regras — Bad Boys 5</div>
+            <button class="add-btn" onclick="openModal('addRule')"><i class="ti ti-plus"></i>Nova</button>
+          </div>
+          <div id="ruleList"></div>
+        </div>
+      </div>
+
+      <!-- MENSAGENS -->
+      <div id="mensagens" class="section">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title"><i class="ti ti-message"></i>Mensagens</div></div>
+          <div class="msg-options" id="msgTypePicker">
+            <div class="msg-card sel" onclick="selMsgType('chat_aviso',this)"><div class="msg-card-title"><i class="ti ti-message-circle"></i>Chat — aviso</div><div class="msg-card-desc">Curto, regra rápida</div></div>
+            <div class="msg-card" onclick="selMsgType('chat_horario',this)"><div class="msg-card-title"><i class="ti ti-clock"></i>Chat — 2º atk</div><div class="msg-card-desc">Libera últimas 12h</div></div>
+            <div class="msg-card" onclick="selMsgType('wpp_membros',this)"><div class="msg-card-title"><i class="ti ti-brand-whatsapp"></i>WPP membros</div><div class="msg-card-desc">Boletim elaborado</div></div>
+            <div class="msg-card" onclick="selMsgType('wpp_adms',this)"><div class="msg-card-title"><i class="ti ti-shield-check"></i>WPP adms</div><div class="msg-card-desc">Relatório 15 clãs</div></div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
+            <div style="font-size:11px;color:var(--text3);">Edite o template livremente — variáveis em <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px;">{chaves}</code> são substituídas pelos dados reais</div>
+            <button class="add-btn" onclick="resetTpl()" style="font-size:10px;padding:3px 8px;">restaurar padrão</button>
+          </div>
+          <textarea class="tpl-area" id="tplArea" oninput="onTplEdit()"></textarea>
+
+          <div style="font-size:10px;color:var(--text3);margin:8px 0 5px;">Clique para inserir variável no cursor:</div>
+          <div class="var-grid" id="varGrid"></div>
+
+          <div style="margin-top:10px;font-size:10px;color:var(--text3);margin-bottom:5px;">Preview da mensagem:</div>
+          <div class="msg-preview" id="msgPreview"></div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="copy-btn" id="copyMsgBtn" onclick="copyMsg()"><i class="ti ti-copy"></i>Copiar</button>
+            <button class="send-wa" onclick="openWA()"><i class="ti ti-brand-whatsapp"></i>WhatsApp</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /scroll-inner -->
+  </div><!-- /scroll-area -->
+
+  <!-- BOTTOM NAV (mobile) -->
+  <div class="tab-nav">
+    <button class="tn-btn active" onclick="showTab('membros')"><i class="ti ti-users"></i>Membros</button>
+    <button class="tn-btn" onclick="showTab('guerras')"><i class="ti ti-shield"></i>Guerras</button>
+    <button class="tn-btn" onclick="showTab('doacoes')"><i class="ti ti-heart"></i>Doações</button>
+    <button class="tn-btn" onclick="showTab('calendario')"><i class="ti ti-calendar"></i>Calendário</button>
+    <button class="tn-btn" onclick="showTab('regras')"><i class="ti ti-book"></i>Regras</button>
+    <button class="tn-btn" onclick="showTab('mensagens')"><i class="ti ti-message"></i>Msg</button>
+  </div>
+</div><!-- /app -->
+
+<div id="modal" style="display:none;" class="modal-overlay"><div class="modal" id="modalContent"></div></div>
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toastMsg">Salvo!</span></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════════ */
+const SHEET_ID = '13z4jNCO9kwjHxmfQwvHVYv8JIiG8jdp0XtY4bL7Wc9I';
+const PASSWORDS = { 'bb5': 'lider' }; // senha: cargo
+
+/* ═══════════════════════════════════════════════════════════════
+   GOOGLE SHEETS API (via Apps Script Web App)
+   — O painel usa localStorage como cache local.
+   — Para integração completa com Sheets, você precisará
+     publicar um Google Apps Script como Web App e substituir
+     APPS_SCRIPT_URL abaixo com a URL gerada.
+   — Por enquanto os dados ficam salvos no localStorage e
+     o botão de exportar JSON está disponível.
+═══════════════════════════════════════════════════════════════ */
+const APPS_SCRIPT_URL = ''; // Cole aqui a URL do Apps Script quando configurar
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MONTHS_S=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const DAYS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+function mKey(y,m){return`${MONTHS_S[m]}/${String(y).slice(-2)}`;}
+function mLabel(y,m){return`${MONTHS_PT[m]} ${y}`;}
+function ini(n){return n.slice(0,2).toUpperCase();}
+function starsHtml(n){let h='';for(let i=0;i<3;i++)h+=`<span class="${i<n?'':'off'}">★</span>`;return`<span class="stars">${h}</span>`;}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════════════════ */
+function doLogin(){
+  const v=document.getElementById('pwd-input').value.trim().toLowerCase();
+  if(PASSWORDS[v]){
+    sessionStorage.setItem('bb5_auth','1');
+    sessionStorage.setItem('bb5_role',PASSWORDS[v]);
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('ready');
+    initApp();
+  } else {
+    const el=document.getElementById('login-err');
+    el.textContent='Senha incorreta. Tente novamente.';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+    setTimeout(()=>el.textContent='',3000);
+  }
+}
+function doLogout(){
+  if(confirm('Sair do painel?')){
+    sessionStorage.clear();
+    location.reload();
+  }
+}
+// Auto-login se já autenticado na sessão
+if(sessionStorage.getItem('bb5_auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('ready');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE & PERSISTENCE
+═══════════════════════════════════════════════════════════════ */
+const DEFAULT={
+  model:1,calYear:2026,calMonth:4,currentFilter:'todos',currentSeason:'mai/26',nextId:50,
+  members:[
+    {id:1,name:'VocêAdm',role:'lider',status:'ativo',warns:0,th:15,joined:'jan/24'},
+    {id:2,name:'CoLider01',role:'co-lider',status:'ativo',warns:0,th:14,joined:'fev/24'},
+    {id:3,name:'CoLider02',role:'co-lider',status:'ativo',warns:0,th:14,joined:'mar/24'},
+    {id:4,name:'Guerreiro01',role:'membro',status:'ativo',warns:0,th:13,joined:'mai/24'},
+    {id:5,name:'Guerreiro02',role:'membro',status:'ativo',warns:1,th:12,joined:'ago/24'},
+    {id:6,name:'Guerreiro03',role:'membro',status:'inativo',warns:0,th:11,joined:'nov/24'},
+    {id:7,name:'Arqueiro01',role:'membro',status:'ativo',warns:0,th:13,joined:'jan/25'},
+    {id:8,name:'Novato01',role:'membro',status:'ativo',warns:2,th:10,joined:'mar/26'},
+  ],
+  wars:[
+    {id:1,date:'10/05/2026',opp:'Dark Legion',ourS:54,theirS:48,size:20,attacks:[
+      {id:'a1',p:'VocêAdm',t:'#1',stars:3,mode:'espelho'},
+      {id:'a2',p:'CoLider01',t:'#2',stars:3,mode:'espelho'},
+      {id:'a3',p:'CoLider02',t:'#3',stars:2,mode:'espelho'},
+    ]},
+    {id:2,date:'06/05/2026',opp:'Storm Riders',ourS:41,theirS:44,size:15,attacks:[
+      {id:'a6',p:'VocêAdm',t:'#1',stars:3,mode:'espelho'},
+    ]},
+  ],
+  donations:{
+    'mai/26':[
+      {player:'VocêAdm',sent:450,recv:120},{player:'CoLider01',sent:380,recv:90},
+      {player:'CoLider02',sent:310,recv:150},{player:'Guerreiro01',sent:220,recv:200},
+      {player:'Guerreiro02',sent:80,recv:300},{player:'Guerreiro03',sent:10,recv:50},
+      {player:'Arqueiro01',sent:190,recv:80},{player:'Novato01',sent:30,recv:220},
+    ],
+    'abr/26':[
+      {player:'VocêAdm',sent:520,recv:140},{player:'CoLider01',sent:410,recv:110},
+    ],
+  },
+  rules:[
+    {id:'r1',title:'Escudo verde obrigatório',text:'Nos dois modelos, somente jogadores com escudo verde participam das guerras.',icon:'shield-half',color:'gold'},
+    {id:'r2',title:'1º ataque — obrigatoriamente no espelho',text:'Atacar a mesma posição que você ocupa no ranking de guerra. Sem exceções.',icon:'sword',color:'gold'},
+    {id:'r3',title:'2º ataque — somente nas últimas 12 horas',text:'Aguardar o horário definido pela liderança antes de usar o segundo ataque.',icon:'clock',color:'gold'},
+    {id:'r4',title:'Heróis 100% disponíveis',text:'Obrigatório ter todos os heróis sem upgrade ativo para entrar nas guerras.',icon:'users',color:'info'},
+    {id:'r5',title:'Ataque errado = punição',text:'Ficar de fora das próximas guerras ou ser removido do clã.',icon:'alert-triangle',color:'warn'},
+    {id:'r6',title:'Ataque ruim / inatividade',text:'Afastamento ou expulsão. No Modelo 2, mínimo 1 ataque = obrigatório.',icon:'skull',color:'danger'},
+    {id:'r7',title:'CWL — Modelo 1 permanente',text:'Durante a Liga de Guerra de Clãs, sempre Modelo 1.',icon:'trophy',color:'danger'},
+    {id:'r8',title:'Mudança de modelo',text:'Falha da administração → Modelo 2. Bom desempenho = manter Modelo 1.',icon:'refresh',color:'warn'},
+  ],
+  fixedTasks:[
+    {id:'f1',title:'Seg / Qui / Dom — guerra regular',text:'1º no espelho, 2º nas últimas 12h.',icon:'calendar-week',color:'gold'},
+    {id:'f2',title:'Sex / Sáb / Dom — Raid Weekend',text:'Começa sexta 4h (Brasília). Cobrar participação.',icon:'shield',color:'info'},
+    {id:'f3',title:'Início do mês — atualizar tudo',text:'Doações, membros ingressados e advertências.',icon:'refresh',color:'warn'},
+    {id:'f4',title:'Dias 1–11 — CWL',text:'Modelo 1 obrigatório. Escudo verde + heróis disponíveis.',icon:'trophy',color:'danger'},
+    {id:'f5',title:'Dias 22–28 — Clan Games',text:'Mobilizar membros para o tier mais alto possível.',icon:'star',color:'warn'},
+  ],
+  customEvents:{},
+  templates:{},
+};
+
+let state;
+function loadState(){
+  try{const s=localStorage.getItem('bb5_v2');if(s)return JSON.parse(s);}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT));
+}
+function saveState(){
+  try{localStorage.setItem('bb5_v2',JSON.stringify(state));setSyncUI('ok');}catch(e){setSyncUI('err');}
+}
+function setSyncUI(status){
+  const el=document.getElementById('syncInd');
+  const txt=document.getElementById('syncTxt');
+  if(!el)return;
+  el.className='sync-indicator '+status;
+  if(status==='ok'){el.querySelector('i').className='ti ti-cloud-check';txt.textContent='salvo';}
+  else if(status==='syncing'){el.querySelector('i').className='ti ti-cloud-upload';txt.textContent='salvando...';}
+  else{el.querySelector('i').className='ti ti-cloud-off';txt.textContent='erro';}
+}
+
+let modalType=null,currentRecordId=null,currentDayKey=null;
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════════ */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+function initApp(){
+  state=loadState();
+  renderMembers(state.currentFilter);
+  updateTopbar();
+  buildVarGrid();
+  selMsgType('chat_aviso',document.querySelector('.msg-card'));
+}
+if(sessionStorage.getItem('bb5_auth')==='1') setTimeout(initApp,0);
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════════════ */
+function updateTopbar(){
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  document.getElementById('topbar-sub').textContent=`${state.members.length} membros · ${active} ativos · M${state.model}`;
+  const p=document.getElementById('modelPill');
+  document.getElementById('modelTxt').textContent='M'+state.model;
+  p.className='model-pill '+(state.model===1?'m1':'m2');
+}
+function toggleModel(){
+  state.model=state.model===1?2:1;
+  saveState();updateTopbar();toast('Modelo '+state.model+' ativado');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════════ */
+function showTab(tab){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.dt-btn,.tn-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  document.querySelectorAll('.dt-btn,.tn-btn').forEach(b=>{
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+tab+"'"))b.classList.add('active');
+  });
+  document.querySelector('.scroll-area').scrollTo(0,0);
+  if(tab==='membros')renderMembers(state.currentFilter);
+  if(tab==='guerras')renderWars();
+  if(tab==='doacoes')renderDonations();
+  if(tab==='calendario')buildCalendar();
+  if(tab==='regras')renderRules();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LABEL HELPERS
+═══════════════════════════════════════════════════════════════ */
+function roleLabel(r){
+  if(r==='lider')return'<span class="badge bgold"><i class="ti ti-crown"></i>Líder</span>';
+  if(r==='co-lider')return'<span class="badge bb"><i class="ti ti-shield"></i>Co-líder</span>';
+  if(r==='veterano')return'<span class="badge bg"><i class="ti ti-star"></i>Veterano</span>';
+  return'<span class="badge bmem">Membro</span>';
+}
+function statusLabel(s,w){
+  if(w>=2)return'<span class="badge br"><i class="ti ti-alert-circle"></i>Advertido</span>';
+  if(s==='ativo')return'<span class="badge bg"><i class="ti ti-circle-check"></i>Ativo</span>';
+  return'<span class="badge bw"><i class="ti ti-clock"></i>Inativo</span>';
+}
+function avatarClass(r){return r==='lider'?'ldr':r==='co-lider'?'co':'';}
+
+/* ═══════════════════════════════════════════════════════════════
+   MEMBERS
+═══════════════════════════════════════════════════════════════ */
+function renderMembers(filter){
+  let list=state.members;
+  if(filter==='lideranca')list=list.filter(m=>m.role!=='membro');
+  else if(filter==='ativo')list=list.filter(m=>m.status==='ativo'&&m.warns<2);
+  else if(filter==='advertido')list=list.filter(m=>m.warns>=1);
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  document.getElementById('memMetrics').innerHTML=`
+    <div class="metric"><div class="metric-val">${state.members.length}</div><div class="metric-lbl">membros</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--gtxt)">${active}</div><div class="metric-lbl">escudo verde</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--ytxt)">${state.members.filter(m=>m.status==='inativo').length}</div><div class="metric-lbl">inativos</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--rtxt)">${state.members.filter(m=>m.warns>=1).length}</div><div class="metric-lbl">advertidos</div></div>`;
+  document.getElementById('memberList').innerHTML=list.length?list.map(m=>{
+    const adv=m.warns>0?` · <span class="adv">${m.warns} adv.</span>`:'';
+    return`<div class="player-row">
+      <div class="avatar ${avatarClass(m.role)}">${ini(m.name)}</div>
+      <div class="player-info"><div class="player-name">${m.name}</div><div class="player-meta">TH${m.th} · ${m.joined||'—'}${adv}</div></div>
+      <div class="badges">${roleLabel(m.role)}${statusLabel(m.status,m.warns)}</div>
+      <div class="row-actions">
+        <div class="warn-stack">
+          <button class="wmini up" onclick="warnM(${m.id},1)"><i class="ti ti-plus"></i></button>
+          <button class="wmini down" onclick="warnM(${m.id},-1)"><i class="ti ti-minus"></i></button>
+        </div>
+        <button class="icon-btn" onclick="openModal('editMember',${m.id})"><i class="ti ti-edit"></i></button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty-state"><i class="ti ti-users-off"></i>Nenhum resultado</div>';
+}
+function warnM(id,d){const m=state.members.find(x=>x.id===id);if(m){m.warns=Math.max(0,m.warns+d);saveState();renderMembers(state.currentFilter);}}
+function filterM(f,el){state.currentFilter=f;document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderMembers(f);}
+
+/* ═══════════════════════════════════════════════════════════════
+   WARS
+═══════════════════════════════════════════════════════════════ */
+function renderWars(){
+  const wins=state.wars.filter(w=>w.ourS>w.theirS).length;
+  const losses=state.wars.filter(w=>w.ourS<w.theirS).length;
+  const totalS=state.wars.reduce((a,w)=>a+w.ourS,0);
+  document.getElementById('warMetrics').innerHTML=`
+    <div class="metric"><div class="metric-val">${state.wars.length}</div><div class="metric-lbl">guerras</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--gtxt)">${wins}</div><div class="metric-lbl">vitórias</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--rtxt)">${losses}</div><div class="metric-lbl">derrotas</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--gold-l)">${totalS}</div><div class="metric-lbl">estrelas</div></div>`;
+  document.getElementById('warList').innerHTML=state.wars.map(w=>{
+    const res=w.ourS>w.theirS?'win':w.ourS<w.theirS?'loss':'draw';
+    const rl=res==='win'?'Vitória':res==='loss'?'Derrota':'Empate';
+    const pct=Math.round((w.ourS/(w.size*3))*100);
+    const pc=res==='win'?'var(--green)':res==='loss'?'var(--red)':'var(--yel)';
+    return`<div class="war-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:6px;">
+        <div><div style="font-size:13px;font-weight:700;color:var(--text);font-family:'Rajdhani',sans-serif;">${w.date} · vs ${w.opp}</div><div style="font-size:10px;color:var(--text3);">${w.size}v${w.size} · ${w.attacks.length} ataques</div></div>
+        <div style="display:flex;gap:3px;align-items:center;flex-shrink:0;">
+          <span class="rbadge ${res}">${rl}</span>
+          <button class="icon-btn" onclick="openModal('editWar',${w.id})"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn danger" onclick="deleteWar(${w.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div class="war-vs">
+        <div class="team-c"><div class="team-n">Bad Boys 5</div><div class="team-s" style="color:var(--gold-l)">${w.ourS}★</div></div>
+        <div style="font-size:12px;color:var(--text3);text-align:center;">vs</div>
+        <div class="team-c"><div class="team-n">${w.opp}</div><div class="team-s" style="color:var(--text2)">${w.theirS}★</div></div>
+      </div>
+      <div class="pbar"><div class="pfill" style="width:${pct}%;background:${pc};"></div></div>
+      <div>${w.attacks.map(a=>`<div class="atk-row"><span class="atk-p">${a.p}</span><span style="min-width:44px;color:var(--text3)">→${a.t}</span>${starsHtml(a.stars)}<span class="badge ${a.mode==='espelho'?'bg':'bb'}" style="font-size:9px">${a.mode}</span><button class="icon-btn danger" style="margin-left:auto" onclick="deleteAtk(${w.id},'${a.id}')"><i class="ti ti-x"></i></button></div>`).join('')}</div>
+      <button class="add-btn" style="margin-top:8px;font-size:11px;" onclick="openModal('addAtk',${w.id})"><i class="ti ti-plus"></i>Ataque</button>
+    </div>`;
+  }).join('')||'<div class="empty-state"><i class="ti ti-shield-off"></i>Nenhuma guerra registrada</div>';
+}
+function deleteWar(id){if(confirm('Excluir esta guerra?')){state.wars=state.wars.filter(w=>w.id!==id);saveState();renderWars();toast('Guerra excluída');}}
+function deleteAtk(wid,aid){const w=state.wars.find(x=>x.id===wid);if(w){w.attacks=w.attacks.filter(a=>a.id!==aid);saveState();renderWars();toast('Ataque removido');}}
+
+/* ═══════════════════════════════════════════════════════════════
+   DONATIONS
+═══════════════════════════════════════════════════════════════ */
+function renderDonations(){
+  const seasons=Object.keys(state.donations);
+  let h=`<button class="stab ${state.currentSeason==='geral'?'active':''}" onclick="setSeason('geral')">📊 Geral</button>`;
+  seasons.forEach(s=>{h+=`<button class="stab ${state.currentSeason===s?'active':''}" onclick="setSeason('${s}')">${s}</button>`;});
+  document.getElementById('seasonTabs').innerHTML=h;
+  let data;
+  if(state.currentSeason==='geral'){
+    const acc={};
+    seasons.forEach(s=>{(state.donations[s]||[]).forEach(d=>{if(!acc[d.player])acc[d.player]={player:d.player,sent:0,recv:0};acc[d.player].sent+=d.sent;acc[d.player].recv+=d.recv;});});
+    data=Object.values(acc);
+  }else data=state.donations[state.currentSeason]||[];
+  const sorted=[...data].sort((a,b)=>b.sent-a.sent);
+  const tS=data.reduce((a,d)=>a+d.sent,0),tR=data.reduce((a,d)=>a+d.recv,0);
+  const zero=data.filter(d=>d.sent===0).length;
+  document.getElementById('donMetrics').innerHTML=`
+    <div class="metric"><div class="metric-val" style="color:var(--gtxt)">${tS.toLocaleString('pt-BR')}</div><div class="metric-lbl">enviadas</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--btxt)">${tR.toLocaleString('pt-BR')}</div><div class="metric-lbl">recebidas</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--rtxt)">${zero}</div><div class="metric-lbl">sem doação</div></div>
+    <div class="metric"><div class="metric-val">${Math.round(tS/Math.max(data.length,1))}</div><div class="metric-lbl">média</div></div>`;
+  document.getElementById('donList').innerHTML=sorted.length?sorted.map((d,i)=>{
+    const ratio=d.recv>0?(d.sent/d.recv).toFixed(1):'∞';
+    const rc=d.sent>=d.recv?'var(--gtxt)':'var(--rtxt)';
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    return`<div class="don-row" style="display:grid;grid-template-columns:20px 28px 1fr 48px 48px 38px 26px;gap:6px;align-items:center;">
+      <span class="don-rank">${medal||(i+1)}</span>
+      <div class="avatar" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${ini(d.player)}</div>
+      <span class="don-name">${d.player}</span>
+      <span class="don-s">+${d.sent}</span>
+      <span class="don-r">${d.recv}</span>
+      <span class="don-ratio" style="color:${rc}">${ratio}</span>
+      ${state.currentSeason!=='geral'?`<button class="icon-btn" onclick="openModal('editDon','${d.player}')"><i class="ti ti-edit"></i></button>`:'<span></span>'}
+    </div>`;
+  }).join(''):'<div class="empty-state"><i class="ti ti-heart-off"></i>Sem dados</div>';
+}
+function setSeason(s){state.currentSeason=s;renderDonations();}
+function closeSeasonConfirm(){
+  if(confirm('Encerrar temporada '+state.currentSeason+' e abrir a próxima?')){
+    const now=new Date(),next=new Date(now.getFullYear(),now.getMonth()+1,1);
+    const nk=mKey(next.getFullYear(),next.getMonth());
+    if(!state.donations[nk])state.donations[nk]=state.members.map(m=>({player:m.name,sent:0,recv:0}));
+    state.currentSeason=nk;saveState();renderDonations();toast('Temporada '+nk+' aberta!');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════════════════════════════ */
+function buildCalendar(){
+  const y=state.calYear,m=state.calMonth;
+  document.getElementById('calMonthTitle').textContent=mLabel(y,m);
+  const today=new Date(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const evs={};
+  function ae(d,cls,lbl){if(!evs[d])evs[d]=[];evs[d].push({cls,lbl});}
+  for(let d=1;d<=dim;d++){
+    if(d<=11)ae(d,'ev-cwl','CWL');
+    const wd=new Date(y,m,d).getDay();
+    if(wd===1||wd===4||wd===0)ae(d,'ev-war','⚔');
+    if(wd===5||wd===6||wd===0)ae(d,'ev-raid','Raid');
+    if(d>=22&&d<=28)ae(d,'ev-games','Games');
+  }
+  const lm=(()=>{const l=new Date(y,m+1,0);while(l.getDay()!==1)l.setDate(l.getDate()-1);return l.getDate();})();
+  ae(lm,'ev-admin','Adm');
+  const ck=`${y}-${m}`;
+  if(state.customEvents&&state.customEvents[ck])Object.keys(state.customEvents[ck]).forEach(d=>{(state.customEvents[ck][d]||[]).forEach(e=>ae(parseInt(d),'ev-custom',e.label.slice(0,6)));});
+  let h='';
+  DAYS_PT.forEach(d=>{h+=`<div class="cal-dh">${d.slice(0,1)}</div>`;});
+  for(let i=0;i<fd;i++)h+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const iT=y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate();
+    const dEvs=(evs[d]||[]).slice(0,3);
+    h+=`<div class="cal-day${iT?' today cal-today':''}" onclick="openDayModal(${d})"><div class="cal-num">${d}</div>${dEvs.map(e=>`<div class="cal-ev ${e.cls}">${e.lbl}</div>`).join('')}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML=h;
+  renderFixed();
+}
+function openDayModal(d){
+  currentDayKey=`${state.calYear}-${state.calMonth}`;
+  if(!state.customEvents)state.customEvents={};
+  const ce=(state.customEvents[currentDayKey]||{})[d]||[];
+  const mc=document.getElementById('modalContent');
+  mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-calendar-plus"></i>${d} de ${MONTHS_PT[state.calMonth]}</div>
+    ${ce.length?`<div style="margin-bottom:1rem;">${ce.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);margin-bottom:5px;font-size:12px;color:var(--text2);font-family:'Rajdhani',sans-serif;font-weight:600;"><span style="flex:1">${e.label}</span><button class="icon-btn danger" onclick="deleteCEv(${d},'${e.id}')"><i class="ti ti-x"></i></button></div>`).join('')}</div>`:''}
+    <div class="mf"><label>Nova atividade</label><input type="text" id="evLabel" placeholder="Ex: Reunião de líderes"/></div>
+    <div class="modal-actions"><button onclick="closeModal()">Fechar</button><button class="primary" onclick="addCEv(${d})">Adicionar</button></div>`;
+  document.getElementById('modal').style.display='flex';
+  setTimeout(()=>document.getElementById('evLabel')&&document.getElementById('evLabel').focus(),100);
+}
+function addCEv(d){
+  const lb=document.getElementById('evLabel').value.trim();if(!lb){closeModal();return;}
+  const k=currentDayKey;
+  if(!state.customEvents[k])state.customEvents[k]={};
+  if(!state.customEvents[k][d])state.customEvents[k][d]=[];
+  state.customEvents[k][d].push({id:'e'+(state.nextId++),label:lb});
+  saveState();closeModal();buildCalendar();toast('Atividade adicionada');
+}
+function deleteCEv(d,id){
+  const k=currentDayKey;
+  if(state.customEvents&&state.customEvents[k]&&state.customEvents[k][d]){
+    state.customEvents[k][d]=state.customEvents[k][d].filter(e=>e.id!==id);
+    saveState();openDayModal(d);buildCalendar();
+  }
+}
+function renderFixed(){
+  document.getElementById('fixedList').innerHTML=(state.fixedTasks||[]).map(t=>`
+    <div class="rule-block">
+      <div class="rule-icon ri-${t.color}"><i class="ti ti-${t.icon}"></i></div>
+      <div class="rule-txt"><strong>${t.title}</strong><br>${t.text}</div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openModal('editFixed','${t.id}')"><i class="ti ti-edit"></i></button>
+        <button class="icon-btn danger" onclick="deleteFixed('${t.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+function deleteFixed(id){if(confirm('Excluir atividade?')){state.fixedTasks=state.fixedTasks.filter(t=>t.id!==id);saveState();renderFixed();toast('Removido');}}
+function prevMonth(){state.calMonth--;if(state.calMonth<0){state.calMonth=11;state.calYear--;}saveState();buildCalendar();}
+function nextMonth(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++;}saveState();buildCalendar();}
+
+/* ═══════════════════════════════════════════════════════════════
+   RULES
+═══════════════════════════════════════════════════════════════ */
+function renderRules(){
+  document.getElementById('ruleList').innerHTML=(state.rules||[]).map(r=>`
+    <div class="rule-block">
+      <div class="rule-icon ri-${r.color}"><i class="ti ti-${r.icon}"></i></div>
+      <div class="rule-txt"><strong>${r.title}</strong><br>${r.text}</div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openModal('editRule','${r.id}')"><i class="ti ti-edit"></i></button>
+        <button class="icon-btn danger" onclick="deleteRule('${r.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+function deleteRule(id){if(confirm('Excluir regra?')){state.rules=state.rules.filter(r=>r.id!==id);saveState();renderRules();toast('Regra excluída');}}
+
+/* ═══════════════════════════════════════════════════════════════
+   MESSAGES + TEMPLATE EDITOR
+═══════════════════════════════════════════════════════════════ */
+const VARS=[
+  {key:'clan_nome',desc:'Nome do clã'},{key:'comunidade',desc:'Comunidade'},{key:'modelo_atual',desc:'Modelo ativo'},
+  {key:'temporada',desc:'Temporada'},{key:'total_membros',desc:'Total membros'},{key:'membros_ativos',desc:'Ativos'},
+  {key:'membros_inativos',desc:'Inativos'},{key:'membros_advertidos',desc:'Qtd advertidos'},
+  {key:'advertidos_lista',desc:'Nomes advertidos'},{key:'ultima_guerra_resultado',desc:'Resultado última guerra'},
+  {key:'ultima_guerra_oponente',desc:'Oponente última guerra'},{key:'ultima_guerra_placar',desc:'Placar'},
+  {key:'ultima_guerra_data',desc:'Data última guerra'},{key:'total_guerras_mes',desc:'Guerras no mês'},
+  {key:'guerras_vitorias',desc:'Vitórias'},{key:'guerras_derrotas',desc:'Derrotas'},
+  {key:'top3_doacoes',desc:'Top 3 doadores'},{key:'top5_doacoes',desc:'Top 5 doadores'},
+  {key:'sem_doacoes',desc:'Sem doação'},{key:'total_enviadas',desc:'Total enviadas'},
+  {key:'regra_1atk',desc:'1º ataque'},{key:'regra_2atk',desc:'2º ataque'},
+];
+const DEFAULTS_TPL={
+  chat_aviso:`⚔️ Guerra ativa — {modelo_atual}\n\n• {regra_1atk}\n• {regra_2atk}\n\nEscudo verde obrigatório. Heróis disponíveis. 🛡️`,
+  chat_horario:`🕛 Liberado o 2º ATAQUE!\n\nÚltimas 12h iniciadas.\n{regra_2atk}\n\nPartam pra cima! ⚔️`,
+  wpp_membros:`🏰 *{clan_nome} — Boletim* 🏰\n_{comunidade} · {temporada}_\n\n*Última guerra:* {ultima_guerra_resultado}\n{ultima_guerra_data} · vs {ultima_guerra_oponente}\nPlacar: {ultima_guerra_placar}\n\n*🏅 Top doadores ({temporada}):*\n{top3_doacoes}\n\n*Modelo:* {modelo_atual}\n*Ativos:* {membros_ativos}/{total_membros}\n\n*⚠️ Regras:*\n• {regra_1atk}\n• {regra_2atk}\n\nPra cima! ⚔️🔥`,
+  wpp_adms:`📊 *RELATÓRIO {clan_nome} — {temporada}*\n_{comunidade} · 15 clãs_\n\n*━━ ROSTER ━━*\nTotal: {total_membros} · Ativos: {membros_ativos}\nInativos: {membros_inativos} · Advertidos: {membros_advertidos}\n└ {advertidos_lista}\n\n*━━ GUERRAS ━━*\n{total_guerras_mes} guerras · {guerras_vitorias}V {guerras_derrotas}D\nÚltima: {ultima_guerra_resultado} vs {ultima_guerra_oponente} ({ultima_guerra_placar})\n\n*━━ DOAÇÕES {temporada} ━━*\nTotal: {total_enviadas}\nSem doação: {sem_doacoes}\nTop 5:\n{top5_doacoes}\n\n*━━ MODELO ━━*\n{modelo_atual}\n\n_Painel BB5_`,
+};
+let currentMsgType='chat_aviso';
+
+function getVarData(){
+  const lw=state.wars[0];
+  const s=state.currentSeason==='geral'?Object.keys(state.donations)[0]:state.currentSeason;
+  const data=state.donations[s]||[];
+  const sorted=[...data].sort((a,b)=>b.sent-a.sent);
+  const warned=state.members.filter(m=>m.warns>=1);
+  const active=state.members.filter(m=>m.status==='ativo'&&m.warns<2).length;
+  const wins=state.wars.filter(w=>w.ourS>w.theirS).length;
+  const losses=state.wars.filter(w=>w.ourS<w.theirS).length;
+  const tS=data.reduce((a,d)=>a+d.sent,0);
+  const zeros=data.filter(d=>d.sent===0).map(d=>d.player);
+  return{
+    clan_nome:'Bad Boys 5',comunidade:'Clash Empire',
+    modelo_atual:state.model===1?'Modelo 1 (organizados)':'Modelo 2 (livres)',
+    temporada:s,total_membros:state.members.length,membros_ativos:active,
+    membros_inativos:state.members.filter(m=>m.status==='inativo').length,
+    membros_advertidos:warned.length,
+    advertidos_lista:warned.length?warned.map(m=>`${m.name}(${m.warns})`).join(', '):'nenhum',
+    ultima_guerra_data:lw?lw.date:'—',ultima_guerra_oponente:lw?lw.opp:'—',
+    ultima_guerra_resultado:lw?(lw.ourS>lw.theirS?'🏆 VITÓRIA':lw.ourS<lw.theirS?'❌ Derrota':'🤝 Empate'):'—',
+    ultima_guerra_placar:lw?`${lw.ourS}★ x ${lw.theirS}★`:'—',
+    total_guerras_mes:state.wars.length,guerras_vitorias:wins,guerras_derrotas:losses,
+    top3_doacoes:sorted.slice(0,3).map((d,i)=>`${'🥇🥈🥉'[i]||''}${d.player} — ${d.sent.toLocaleString('pt-BR')}`).join('\n')||'—',
+    top5_doacoes:sorted.slice(0,5).map((d,i)=>`${i+1}. ${d.player} — ${d.sent.toLocaleString('pt-BR')}`).join('\n')||'—',
+    sem_doacoes:zeros.length?zeros.join(', '):'nenhum',
+    total_enviadas:tS.toLocaleString('pt-BR'),
+    regra_1atk:'1º atk: ESPELHO obrigatório',
+    regra_2atk:'2º atk: somente nas últimas 12h',
+  };
+}
+function resolveTPL(tpl){
+  const d=getVarData();
+  return tpl.replace(/\{(\w+)\}/g,(_,k)=>d[k]!==undefined?d[k]:`{${k}}`);
+}
+function buildVarGrid(){
+  document.getElementById('varGrid').innerHTML=VARS.map(v=>
+    `<div class="var-chip" onclick="insertVar('{${v.key}}')"><span class="var-key">{${v.key}}</span></div>`
+  ).join('');
+}
+function insertVar(v){
+  const ta=document.getElementById('tplArea');
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  ta.value=ta.value.slice(0,s)+v+ta.value.slice(e);
+  ta.selectionStart=ta.selectionEnd=s+v.length;
+  ta.focus();
+  if(!state.templates)state.templates={};
+  state.templates[currentMsgType]=ta.value;
+  updatePreview();
+}
+function selMsgType(type,el){
+  currentMsgType=type;
+  document.querySelectorAll('.msg-card').forEach(c=>c.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  if(!state.templates)state.templates={};
+  const tpl=state.templates[type]||DEFAULTS_TPL[type];
+  document.getElementById('tplArea').value=tpl;
+  updatePreview();
+}
+function onTplEdit(){
+  if(!state.templates)state.templates={};
+  state.templates[currentMsgType]=document.getElementById('tplArea').value;
+  saveState();updatePreview();
+}
+function updatePreview(){
+  const tpl=document.getElementById('tplArea').value;
+  document.getElementById('msgPreview').textContent=resolveTPL(tpl);
+}
+function resetTpl(){
+  if(confirm('Restaurar template padrão?')){
+    if(!state.templates)state.templates={};
+    delete state.templates[currentMsgType];
+    document.getElementById('tplArea').value=DEFAULTS_TPL[currentMsgType];
+    saveState();updatePreview();toast('Template restaurado');
+  }
+}
+function getMsg(){return resolveTPL(document.getElementById('tplArea').value);}
+function copyMsg(){
+  navigator.clipboard.writeText(getMsg()).then(()=>{
+    const b=document.getElementById('copyMsgBtn');
+    b.classList.add('copied');b.innerHTML='<i class="ti ti-check"></i>Copiado!';
+    setTimeout(()=>{b.classList.remove('copied');b.innerHTML='<i class="ti ti-copy"></i>Copiar';},2000);
+    toast('Mensagem copiada!');
+  });
+}
+function openWA(){window.open(`https://wa.me/?text=${encodeURIComponent(getMsg())}`,'_blank');}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════════════ */
+const ICON_OPTS=['shield-half','sword','clock','users','alert-triangle','skull','trophy','refresh','star','calendar-week','shield','heart','crown','bolt'];
+const COLOR_OPTS=[['gold','Dourado'],['info','Azul'],['warn','Amarelo'],['danger','Vermelho']];
+
+function openModal(type,id){
+  modalType=type;currentRecordId=id;
+  const mc=document.getElementById('modalContent');
+
+  if(type==='addMember'||type==='editMember'){
+    const m=type==='editMember'?state.members.find(x=>x.id===id):{name:'',th:12,role:'membro',status:'ativo',joined:''};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-${type==='editMember'?'edit':'user-plus'}"></i>${type==='editMember'?'Editar':'Adicionar'} membro</div>
+      <div class="mf"><label>Nome no jogo</label><input type="text" id="mName" value="${m.name||''}" placeholder="Ex: DragonSlayer99"/></div>
+      <div class="mf"><label>Town Hall</label><input type="number" id="mTh" min="1" max="17" value="${m.th||12}"/></div>
+      <div class="mf"><label>Cargo</label><select id="mRole">
+        <option value="membro" ${m.role==='membro'?'selected':''}>Membro</option>
+        <option value="veterano" ${m.role==='veterano'?'selected':''}>Veterano</option>
+        <option value="co-lider" ${m.role==='co-lider'?'selected':''}>Co-líder</option>
+        <option value="lider" ${m.role==='lider'?'selected':''}>Líder</option>
+      </select></div>
+      <div class="mf"><label>Status</label><select id="mStatus">
+        <option value="ativo" ${m.status==='ativo'?'selected':''}>Ativo (escudo verde)</option>
+        <option value="inativo" ${m.status==='inativo'?'selected':''}>Inativo</option>
+      </select></div>
+      <div class="mf"><label>Mês de ingresso</label><input type="text" id="mJoined" value="${m.joined||''}" placeholder="mai/26"/></div>
+      <div class="modal-actions">${type==='editMember'?`<button class="danger-btn left" onclick="deleteMember(${id})">Remover</button>`:''}
+        <button onclick="closeModal()">Cancelar</button>
+        <button class="primary" onclick="saveMember(${type==='editMember'?id:'null'})">${type==='editMember'?'Salvar':'Adicionar'}</button>
+      </div>`;
+  }else if(type==='addWar'||type==='editWar'){
+    const w=type==='editWar'?state.wars.find(x=>x.id===id):{opp:'',size:20,ourS:0,theirS:0,date:''};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-sword"></i>${type==='editWar'?'Editar':'Registrar'} guerra</div>
+      <div class="mf"><label>Data (dd/mm/aaaa)</label><input type="text" id="wDate" value="${w.date||''}"/></div>
+      <div class="mf"><label>Clã oponente</label><input type="text" id="wOpp" value="${w.opp||''}"/></div>
+      <div class="mf"><label>Tamanho</label><input type="number" id="wSize" value="${w.size}" min="5" max="50"/></div>
+      <div class="mf"><label>Nossas estrelas</label><input type="number" id="wOur" value="${w.ourS}" min="0"/></div>
+      <div class="mf"><label>Estrelas deles</label><input type="number" id="wTheir" value="${w.theirS}" min="0"/></div>
+      <div class="modal-actions"><button onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveWar(${type==='editWar'?id:'null'})">Salvar</button></div>`;
+  }else if(type==='addAtk'){
+    const opts=state.members.map(m=>`<option value="${m.name}">${m.name}</option>`).join('');
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-sword"></i>Registrar ataque</div>
+      <div class="mf"><label>Jogador</label><select id="aPlayer">${opts}</select></div>
+      <div class="mf"><label>Base alvo</label><input type="text" id="aTarget" value="#"/></div>
+      <div class="mf"><label>Estrelas</label><input type="number" id="aStars" value="3" min="0" max="3"/></div>
+      <div class="mf"><label>Tipo</label><select id="aMode"><option value="espelho">Espelho (1º atk)</option><option value="livre">Livre (2º atk)</option></select></div>
+      <div class="modal-actions"><button onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveAtk()">Salvar</button></div>`;
+  }else if(type==='addDon'||type==='editDon'){
+    let player=id||'';let d={sent:0,recv:0};
+    if(type==='editDon'){const arr=state.donations[state.currentSeason]||[];d=arr.find(x=>x.player===id)||d;}
+    const opts=state.members.map(m=>`<option value="${m.name}" ${player===m.name?'selected':''}>${m.name}</option>`).join('');
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-heart"></i>${type==='editDon'?'Editar':'Atualizar'} doações — ${state.currentSeason}</div>
+      <div class="mf"><label>Jogador</label><select id="dPlayer" ${type==='editDon'?'disabled':''}>${opts}</select></div>
+      <div class="mf"><label>Total enviadas</label><input type="number" id="dSent" value="${d.sent}" min="0"/></div>
+      <div class="mf"><label>Total recebidas</label><input type="number" id="dRecv" value="${d.recv}" min="0"/></div>
+      <div class="modal-actions">${type==='editDon'?`<button class="danger-btn left" onclick="deleteDon('${id}')">Remover</button>`:''}
+        <button onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveDon()">Salvar</button></div>`;
+  }else if(type==='addRule'||type==='editRule'){
+    const r=type==='editRule'?state.rules.find(x=>x.id===id):{title:'',text:'',icon:'shield',color:'gold'};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-book"></i>${type==='editRule'?'Editar':'Nova'} regra</div>
+      <div class="mf"><label>Título</label><input type="text" id="rTitle" value="${r.title||''}"/></div>
+      <div class="mf"><label>Descrição</label><textarea id="rText">${r.text||''}</textarea></div>
+      <div class="mf"><label>Ícone</label><select id="rIcon">${ICON_OPTS.map(i=>`<option value="${i}" ${r.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+      <div class="mf"><label>Cor</label><select id="rColor">${COLOR_OPTS.map(([v,l])=>`<option value="${v}" ${r.color===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="modal-actions"><button onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveRule('${type==='editRule'?id:''}')">Salvar</button></div>`;
+  }else if(type==='addFixed'||type==='editFixed'){
+    const t=type==='editFixed'?state.fixedTasks.find(x=>x.id===id):{title:'',text:'',icon:'calendar-week',color:'gold'};
+    mc.innerHTML=`<div class="modal-handle"></div><div class="modal-title"><i class="ti ti-list"></i>${type==='editFixed'?'Editar':'Nova'} atividade</div>
+      <div class="mf"><label>Título</label><input type="text" id="fTitle" value="${t.title||''}"/></div>
+      <div class="mf"><label>Descrição</label><textarea id="fText">${t.text||''}</textarea></div>
+      <div class="mf"><label>Ícone</label><select id="fIcon">${ICON_OPTS.map(i=>`<option value="${i}" ${t.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+      <div class="mf"><label>Cor</label><select id="fColor">${COLOR_OPTS.map(([v,l])=>`<option value="${v}" ${t.color===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="modal-actions"><button onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveFixed('${type==='editFixed'?id:''}')">Salvar</button></div>`;
+  }
+  document.getElementById('modal').style.display='flex';
+  setTimeout(()=>{const fi=document.querySelector('#modalContent input');if(fi)fi.focus();},150);
+}
+
+function closeModal(){document.getElementById('modal').style.display='none';}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ── SAVE FUNCTIONS ── */
+function saveMember(id){
+  const name=document.getElementById('mName').value.trim();
+  const th=parseInt(document.getElementById('mTh').value)||12;
+  const role=document.getElementById('mRole').value;
+  const status=document.getElementById('mStatus').value;
+  const joined=document.getElementById('mJoined').value.trim();
+  if(!name)return;
+  if(id&&id!=='null'){const m=state.members.find(x=>x.id===id);if(m){m.name=name;m.th=th;m.role=role;m.status=status;m.joined=joined;}}
+  else{state.members.push({id:state.nextId++,name,role,status,warns:0,th,joined});if(state.donations[state.currentSeason])state.donations[state.currentSeason].push({player:name,sent:0,recv:0});}
+  saveState();closeModal();renderMembers(state.currentFilter);updateTopbar();toast(id&&id!=='null'?'Membro atualizado':'Membro adicionado!');
+}
+function deleteMember(id){
+  const m=state.members.find(x=>x.id===id);
+  if(confirm('Remover '+m.name+'?')){state.members=state.members.filter(x=>x.id!==id);saveState();closeModal();renderMembers(state.currentFilter);updateTopbar();toast(m.name+' removido');}
+}
+function saveWar(id){
+  const opp=document.getElementById('wOpp').value.trim();
+  const size=parseInt(document.getElementById('wSize').value)||20;
+  const ourS=parseInt(document.getElementById('wOur').value)||0;
+  const theirS=parseInt(document.getElementById('wTheir').value)||0;
+  const date=document.getElementById('wDate').value.trim();
+  if(!opp||!date)return;
+  if(id&&id!=='null'){const w=state.wars.find(x=>x.id===id);if(w){w.opp=opp;w.size=size;w.ourS=ourS;w.theirS=theirS;w.date=date;}}
+  else state.wars.unshift({id:state.nextId++,date,opp,ourS,theirS,size,attacks:[]});
+  saveState();closeModal();renderWars();toast('Guerra salva!');
+}
+function saveAtk(){
+  const p=document.getElementById('aPlayer').value;
+  const t=document.getElementById('aTarget').value.trim();
+  const stars=parseInt(document.getElementById('aStars').value)||0;
+  const mode=document.getElementById('aMode').value;
+  const war=state.wars.find(w=>w.id===currentRecordId);
+  if(war&&t)war.attacks.push({id:'a'+(state.nextId++),p,t,stars,mode});
+  saveState();closeModal();renderWars();toast('Ataque registrado!');
+}
+function saveDon(){
+  const player=document.getElementById('dPlayer').value;
+  const sent=parseInt(document.getElementById('dSent').value)||0;
+  const recv=parseInt(document.getElementById('dRecv').value)||0;
+  if(!state.donations[state.currentSeason])state.donations[state.currentSeason]=[];
+  let d=state.donations[state.currentSeason].find(x=>x.player===player);
+  if(d){d.sent=sent;d.recv=recv;}else state.donations[state.currentSeason].push({player,sent,recv});
+  saveState();closeModal();renderDonations();toast('Doações atualizadas!');
+}
+function deleteDon(player){if(confirm('Remover '+player+'?')){state.donations[state.currentSeason]=state.donations[state.currentSeason].filter(x=>x.player!==player);saveState();closeModal();renderDonations();toast('Removido');}}
+function saveRule(id){
+  const title=document.getElementById('rTitle').value.trim();
+  const text=document.getElementById('rText').value.trim();
+  const icon=document.getElementById('rIcon').value;
+  const color=document.getElementById('rColor').value;
+  if(!title)return;
+  if(id){const r=state.rules.find(x=>x.id===id);if(r){r.title=title;r.text=text;r.icon=icon;r.color=color;}}
+  else state.rules.push({id:'r'+(state.nextId++),title,text,icon,color});
+  saveState();closeModal();renderRules();toast('Regra salva!');
+}
+function saveFixed(id){
+  const title=document.getElementById('fTitle').value.trim();
+  const text=document.getElementById('fText').value.trim();
+  const icon=document.getElementById('fIcon').value;
+  const color=document.getElementById('fColor').value;
+  if(!title)return;
+  if(id){const t=state.fixedTasks.find(x=>x.id===id);if(t){t.title=title;t.text=text;t.icon=icon;t.color=color;}}
+  else state.fixedTasks.push({id:'f'+(state.nextId++),title,text,icon,color});
+  saveState();closeModal();renderFixed();toast('Atividade salva!');
+}
+</script>
+</body>
+</html>
