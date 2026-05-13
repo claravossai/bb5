@@ -1345,7 +1345,7 @@ button{cursor:pointer;}
    ═════════════════════════════════════════════════════════════ */
 const SHEET_ID = '13z4jNCO9kwjHxmfQwvHVYv8JIiG8jdp0XtY4bL7Wc9I';
 const PASSWORDS = { 'bb5': 'lider' };
-const APPS_SCRIPT_URL = '';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzElXHBOGJp2enUN9fbPpVWn4h2xqVsotO8r3xqrVLcpAJCM5TYroX3jKAJXmbqf07wPg/exec';
 
 const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MONTHS_S=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -1626,12 +1626,19 @@ function toast(msg){
 }
 
 /* ═════════════════ INIT ═════════════════ */
-function initApp(){
-  state=loadState();
+async function initApp(){
+  state=loadState(); // load local first (instant)
   renderMembers(state.currentFilter);
   updateTopbar();
   buildVarGrid();
   selMsgType('chat_aviso',document.querySelector('.msg-card'));
+  // then try Sheets (may update data)
+  const loaded = await loadFromSheets();
+  if (loaded) {
+    renderMembers(state.currentFilter);
+    updateTopbar();
+    toast('☁️ Dados carregados do Sheets!');
+  }
 }
 if(sessionStorage.getItem('bb5_auth')==='1') setTimeout(initApp,0);
 
@@ -2139,6 +2146,101 @@ function saveFixed(id){
   else state.fixedTasks.push({id:'f'+(state.nextId++),title,text,icon,color});
   saveState();closeModal();renderFixed();toast('Atividade salva!');
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GOOGLE SHEETS SYNC
+═══════════════════════════════════════════════════════════════ */
+async function syncToSheets() {
+  if (!APPS_SCRIPT_URL) return;
+  setSyncUI('syncing');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'save', state }),
+    });
+    const json = await res.json();
+    if (json.ok) { setSyncUI('ok'); toast('☁️ Salvo no Sheets!'); }
+    else { setSyncUI('err'); console.error('Sheets error:', json.error); }
+  } catch(e) {
+    setSyncUI('err');
+    console.warn('Sheets offline, dados salvos localmente');
+  }
+}
+
+async function loadFromSheets() {
+  if (!APPS_SCRIPT_URL) return false;
+  setSyncUI('syncing');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=load');
+    const json = await res.json();
+    if (!json.ok || !json.data) { setSyncUI('err'); return false; }
+    const sheets = json.data;
+
+    // Parse members
+    if (sheets.members && sheets.members.length > 1) {
+      const [hdr, ...rows] = sheets.members;
+      state.members = rows.map(r => ({
+        id: r[0], name: r[1], role: r[2], status: r[3],
+        warns: parseInt(r[4])||0, th: parseInt(r[5])||12, joined: r[6]
+      })).filter(m => m.name);
+    }
+
+    // Parse wars
+    if (sheets.wars && sheets.wars.length > 1) {
+      const [hdr, ...rows] = sheets.wars;
+      state.wars = rows.map(r => ({
+        id: r[0], date: r[1], opp: r[2],
+        ourS: parseInt(r[3])||0, theirS: parseInt(r[4])||0,
+        size: parseInt(r[5])||20,
+        attacks: (() => { try { return JSON.parse(r[6]||'[]'); } catch(e) { return []; } })()
+      })).filter(w => w.opp);
+    }
+
+    // Parse donations
+    if (sheets.donations && sheets.donations.length > 1) {
+      const [hdr, ...rows] = sheets.donations;
+      state.donations = {};
+      rows.forEach(r => {
+        const [season, player, sent, recv] = r;
+        if (!season || !player) return;
+        if (!state.donations[season]) state.donations[season] = [];
+        state.donations[season].push({ player, sent: parseInt(sent)||0, recv: parseInt(recv)||0 });
+      });
+    }
+
+    // Parse config
+    if (sheets.config && sheets.config.length > 1) {
+      const [hdr, ...rows] = sheets.config;
+      const cfg = {};
+      rows.forEach(r => cfg[r[0]] = r[1]);
+      if (cfg.model) state.model = parseInt(cfg.model)||1;
+      if (cfg.currentSeason) state.currentSeason = cfg.currentSeason;
+      if (cfg.templates) { try { state.templates = JSON.parse(cfg.templates); } catch(e){} }
+      if (cfg.rules) { try { state.rules = JSON.parse(cfg.rules); } catch(e){} }
+      if (cfg.fixedTasks) { try { state.fixedTasks = JSON.parse(cfg.fixedTasks); } catch(e){} }
+      if (cfg.customEvents) { try { state.customEvents = JSON.parse(cfg.customEvents); } catch(e){} }
+    }
+
+    saveState(); // cache locally too
+    setSyncUI('ok');
+    return true;
+  } catch(e) {
+    setSyncUI('err');
+    console.warn('Could not load from Sheets, using localStorage');
+    return false;
+  }
+}
+
+// Auto-sync to Sheets every time state is saved
+const _origSaveState = saveState;
+function saveState() {
+  try { localStorage.setItem('bb5_v2', JSON.stringify(state)); setSyncUI('ok'); } catch(e) { setSyncUI('err'); }
+  // Debounced sync to Sheets
+  clearTimeout(saveState._timer);
+  saveState._timer = setTimeout(() => syncToSheets(), 1500);
+}
+saveState._timer = null;
+
 </script>
 </body>
 </html>
